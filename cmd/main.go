@@ -21,5 +21,7 @@ func main() {
 		return
 	}
 
-	println(retunr)
+	kore := userService.Test("koreyone")
+
+	println(retunr, kore)
 }

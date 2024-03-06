@@ -16,7 +16,11 @@ func (s *UserRepositoryImpl) Create(ctx context.Context, user *model.User) error
 	return nil
 }
 
-func (repo *UserRepositoryImpl) FindByID(ctx context.Context, id uint) (string, error) {
+func (s *UserRepositoryImpl) FindByID(ctx context.Context, id uint) (string, error) {
 	// ここにID検索のロジックを実装します。
 	return "hehe", nil
+}
+
+func (s *UserRepositoryImpl) Test(moji string) string {
+	return moji
 }

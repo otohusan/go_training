@@ -24,3 +24,7 @@ func (s *UserService) FindByID(ctx context.Context, id uint) (string, error) {
 func (s *UserService) Create(ctx context.Context, user *model.User) error {
 	return s.repo.Create(ctx, user)
 }
+
+func (s *UserService) Test(moji string) string {
+	return s.repo.Test(moji)
+}
