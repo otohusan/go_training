@@ -24,3 +24,7 @@ func (s *UserRepositoryImpl) FindByID(ctx context.Context, id uint) (string, err
 func (s *UserRepositoryImpl) Test(moji string) string {
 	return moji
 }
+
+func (s *UserRepositoryImpl) Dom(moji string) string {
+	return moji
+}

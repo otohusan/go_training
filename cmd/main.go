@@ -23,5 +23,7 @@ func main() {
 
 	kore := userService.Test("koreyone")
 
-	println(retunr, kore)
+	dom := userService.Dom("sasa")
+
+	println(retunr, kore, dom)
 }

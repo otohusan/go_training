@@ -10,4 +10,5 @@ type UserRepository interface {
 	FindByID(ctx context.Context, id uint) (string, error)
 	Create(ctx context.Context, user *model.User) error
 	Test(s string) string
+	Dom(s string) string
 }

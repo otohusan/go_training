@@ -28,3 +28,7 @@ func (s *UserService) Create(ctx context.Context, user *model.User) error {
 func (s *UserService) Test(moji string) string {
 	return s.repo.Test(moji)
 }
+
+func (s *UserService) Dom(moji string) string {
+	return s.repo.Dom(moji)
+}
