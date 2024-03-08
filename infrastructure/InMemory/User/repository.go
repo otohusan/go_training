@@ -1,4 +1,4 @@
-package userRepo
+package repository
 
 import (
 	"context"
@@ -8,15 +8,20 @@ import (
 
 type UserRepositoryImpl struct{}
 
+type users []model.User
+
+var usersList = users{{Name: "sas", ID: 33}, {Name: "you", ID: 39}}
+
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
 }
 
 func (s *UserRepositoryImpl) Create(ctx context.Context, user *model.User) error {
+
 	return nil
 }
 
 func (s *UserRepositoryImpl) FindByID(ctx context.Context, id uint) (*model.User, error) {
 	// ここにID検索のロジックを実装します。
-	return &model.User{Name: "shin", ID: 228}, nil
+	return &usersList[1], nil
 }

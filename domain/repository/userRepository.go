@@ -7,8 +7,6 @@ import (
 
 // UserRepository はユーザーリポジトリのインターフェースです。
 type UserRepository interface {
-	FindByID(ctx context.Context, id uint) (string, error)
+	FindByID(ctx context.Context, id uint) (*model.User, error)
 	Create(ctx context.Context, user *model.User) error
-	Test(s string) string
-	Dom(s string) string
 }

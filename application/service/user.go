@@ -17,18 +17,10 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) FindByID(ctx context.Context, id uint) (string, error) {
+func (s *UserService) ReturnUser(ctx context.Context, id uint) (*model.User, error) {
 	return s.repo.FindByID(ctx, id)
 }
 
 func (s *UserService) Create(ctx context.Context, user *model.User) error {
 	return s.repo.Create(ctx, user)
-}
-
-func (s *UserService) Test(moji string) string {
-	return s.repo.Test(moji)
-}
-
-func (s *UserService) Dom(moji string) string {
-	return s.repo.Dom(moji)
 }

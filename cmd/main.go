@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"go-training/application/service"
 	"go-training/domain/model"
-	userRepo "go-training/infrastructure/rest"
+
+	// userRepo "go-training/infrastructure/rest"
+	repository "go-training/infrastructure/InMemory/User"
 )
 
 func main() {
@@ -12,18 +15,14 @@ func main() {
 		Name: "sasas",
 	}
 
-	userReposit := userRepo.NewUserRepositoryImpl()
+	userReposit := repository.NewUserRepositoryImpl()
 
 	userService := service.NewUserService(userReposit)
 
-	retunr, error := userService.FindByID(user, 2112)
+	retunr, error := userService.ReturnUser(user, 2112)
 	if error != nil {
 		return
 	}
 
-	kore := userService.Test("koreyone")
-
-	dom := userService.Dom("sasa")
-
-	println(retunr, kore, dom)
+	fmt.Println(retunr)
 }
