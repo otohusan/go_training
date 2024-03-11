@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"context"
+	// "context"
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
@@ -22,8 +22,10 @@ func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 	return usersList, nil
 }
 
-func (s *UserRepositoryImpl) Create(ctx context.Context, user *model.User) error {
-
+func (s *UserRepositoryImpl) Create(user *model.User) error {
+	id := uint(len(usersList) + 1)
+	CreatedUser := model.User{Name: user.Name, ID: id}
+	usersList = append(usersList, CreatedUser)
 	return nil
 }
 

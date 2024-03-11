@@ -1,7 +1,7 @@
 package service
 
 import (
-	"context"
+	// "context"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 )
@@ -25,6 +25,6 @@ func (s *UserService) ReturnUser(id uint) (*model.User, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *UserService) Create(ctx context.Context, user *model.User) error {
-	return s.repo.Create(ctx, user)
+func (s *UserService) Create(user *model.User) error {
+	return s.repo.Create(user)
 }

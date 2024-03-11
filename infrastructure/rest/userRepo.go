@@ -1,7 +1,7 @@
 package userRepo
 
 import (
-	"context"
+	// "context"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 )
@@ -22,7 +22,7 @@ func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 	return usersList, nil
 }
 
-func (s *UserRepositoryImpl) Create(ctx context.Context, user *model.User) error {
+func (s *UserRepositoryImpl) Create(user *model.User) error {
 	return nil
 }
 
