@@ -16,7 +16,7 @@ func (s *UserRepositoryImpl) Create(ctx context.Context, user *model.User) error
 	return nil
 }
 
-func (s *UserRepositoryImpl) FindByID(ctx context.Context, id uint) (*model.User, error) {
+func (s *UserRepositoryImpl) FindByID(id uint) (*model.User, error) {
 	// ここにID検索のロジックを実装します。
 	return &model.User{Name: "shin", ID: 228}, nil
 }

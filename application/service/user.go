@@ -17,8 +17,8 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) ReturnUser(ctx context.Context, id uint) (*model.User, error) {
-	return s.repo.FindByID(ctx, id)
+func (s *UserService) ReturnUser(id uint) (*model.User, error) {
+	return s.repo.FindByID(id)
 }
 
 func (s *UserService) Create(ctx context.Context, user *model.User) error {
