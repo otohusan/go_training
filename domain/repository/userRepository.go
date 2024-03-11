@@ -9,4 +9,5 @@ import (
 type UserRepository interface {
 	FindByID(id uint) (*model.User, error)
 	Create(ctx context.Context, user *model.User) error
+	Get() ([]model.User, error)
 }

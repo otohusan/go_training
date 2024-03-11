@@ -20,5 +20,11 @@ func main() {
 		return
 	}
 
-	fmt.Println(retunr)
+	userList, eerror := userService.GetUserList()
+	if eerror != nil {
+		fmt.Print(error)
+		return
+	}
+
+	fmt.Println(retunr, userList)
 }

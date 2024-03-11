@@ -8,8 +8,18 @@ import (
 
 type UserRepositoryImpl struct{}
 
+// 仮のデータリスト
+type users []model.User
+
+var usersList = users{{Name: "sas", ID: 33}, {Name: "you", ID: 39}, {Name: "mina", ID: 21}, {Name: "mina", ID: 31}}
+
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
+}
+
+func (s *UserRepositoryImpl) Get() ([]model.User, error) {
+
+	return usersList, nil
 }
 
 func (s *UserRepositoryImpl) Create(ctx context.Context, user *model.User) error {

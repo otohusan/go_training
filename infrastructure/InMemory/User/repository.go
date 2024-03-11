@@ -17,6 +17,11 @@ func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
 }
 
+func (s *UserRepositoryImpl) Get() ([]model.User, error) {
+
+	return usersList, nil
+}
+
 func (s *UserRepositoryImpl) Create(ctx context.Context, user *model.User) error {
 
 	return nil
