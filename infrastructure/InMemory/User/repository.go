@@ -42,6 +42,25 @@ func (s *UserRepositoryImpl) FindByID(id uint) (*model.User, error) {
 	if userIndex == -1 {
 		return nil, errors.New("userが見つかりません")
 	}
-	// ここにID検索のロジックを実装します。
+
 	return &usersList[1], nil
+}
+
+func (s *UserRepositoryImpl) Delete(id uint) error {
+	userIndex := -1
+
+	for i, v := range usersList {
+		if v.ID == id {
+			userIndex = i
+			break
+		}
+	}
+
+	if userIndex == -1 {
+		return errors.New("userが見つかりません")
+	}
+
+	usersList = append(usersList[:userIndex], usersList[userIndex+1:]...)
+	// ここにID検索のロジックを実装します。
+	return nil
 }

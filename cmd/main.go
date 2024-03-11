@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"go-training/application/service"
-	"go-training/domain/model"
 
 	// userRepo "go-training/infrastructure/rest"
 	repository "go-training/infrastructure/InMemory/User"
@@ -21,9 +20,7 @@ func main() {
 	// 	return
 	// }
 
-	user := model.User{Name: "saii", ID: 2}
-
-	userService.Create(&user)
+	userService.DeleteUserByID(39)
 
 	userList, eerror := userService.GetUserList()
 	if eerror != nil {

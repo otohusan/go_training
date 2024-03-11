@@ -30,3 +30,7 @@ func (s *UserRepositoryImpl) FindByID(id uint) (*model.User, error) {
 	// ここにID検索のロジックを実装します。
 	return &model.User{Name: "shin", ID: 228}, nil
 }
+
+func (s *UserRepositoryImpl) Delete(id uint) error {
+	return nil
+}
