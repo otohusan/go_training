@@ -21,7 +21,7 @@ func (s *UserService) GetUserList() ([]model.User, error) {
 	return s.repo.Get()
 }
 
-func (s *UserService) ReturnUser(id uint) (*model.User, error) {
+func (s *UserService) ReturnUser(id string) (*model.User, error) {
 	return s.repo.FindByID(id)
 }
 
@@ -29,6 +29,6 @@ func (s *UserService) Create(user *model.User) error {
 	return s.repo.Create(user)
 }
 
-func (s *UserService) DeleteUserByID(id uint) error {
+func (s *UserService) DeleteUserByID(id string) error {
 	return s.repo.Delete(id)
 }

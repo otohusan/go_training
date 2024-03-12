@@ -4,7 +4,7 @@ import "time"
 
 // User はユーザー情報を表すドメインモデルです。
 type User struct {
-	ID   uint   `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 

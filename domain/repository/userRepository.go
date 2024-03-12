@@ -8,7 +8,7 @@ import (
 // UserRepository はユーザーリポジトリのインターフェースです。
 type UserRepository interface {
 	Get() ([]model.User, error)
-	FindByID(id uint) (*model.User, error)
+	FindByID(id string) (*model.User, error)
 	Create(user *model.User) error
-	Delete(id uint) error
+	Delete(id string) error
 }

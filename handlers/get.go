@@ -7,7 +7,8 @@ import (
 )
 
 func (h *UserHandler) GetUserList(c *gin.Context) {
-	userList, err := h.userService.GetUserList()
+	id := c.Param("id")
+	userList, err := h.userService.ReturnUser(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

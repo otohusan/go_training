@@ -11,7 +11,7 @@ type UserRepositoryImpl struct{}
 // 仮のデータリスト
 type users []model.User
 
-var usersList = users{{Name: "sas", ID: 33}, {Name: "you", ID: 39}, {Name: "mina", ID: 21}, {Name: "mina", ID: 31}}
+var usersList = users{{Name: "sas", ID: "33"}, {Name: "you", ID: "44"}, {Name: "mina", ID: "22"}, {Name: "mina", ID: "55"}}
 
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
@@ -26,11 +26,11 @@ func (s *UserRepositoryImpl) Create(user *model.User) error {
 	return nil
 }
 
-func (s *UserRepositoryImpl) FindByID(id uint) (*model.User, error) {
+func (s *UserRepositoryImpl) FindByID(id string) (*model.User, error) {
 	// ここにID検索のロジックを実装します。
-	return &model.User{Name: "shin", ID: 228}, nil
+	return &model.User{Name: "shin", ID: "33"}, nil
 }
 
-func (s *UserRepositoryImpl) Delete(id uint) error {
+func (s *UserRepositoryImpl) Delete(id string) error {
 	return nil
 }

@@ -5,13 +5,14 @@ import (
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
+	"strconv"
 )
 
 type UserRepositoryImpl struct{}
 
 type users []model.User
 
-var usersList = users{{Name: "sas", ID: 33}, {Name: "you", ID: 39}, {Name: "mina", ID: 21}, {Name: "mina", ID: 31}}
+var usersList = users{{Name: "sas", ID: "33"}, {Name: "you", ID: "44"}, {Name: "mina", ID: "22"}, {Name: "mina", ID: "55"}}
 
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
@@ -23,13 +24,13 @@ func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 }
 
 func (s *UserRepositoryImpl) Create(user *model.User) error {
-	id := uint(len(usersList) + 1)
-	CreatedUser := model.User{Name: user.Name, ID: id}
+	id := int(len(usersList) + 1)
+	CreatedUser := model.User{Name: user.Name, ID: strconv.Itoa(id)}
 	usersList = append(usersList, CreatedUser)
 	return nil
 }
 
-func (s *UserRepositoryImpl) FindByID(id uint) (*model.User, error) {
+func (s *UserRepositoryImpl) FindByID(id string) (*model.User, error) {
 	userIndex := -1
 
 	for i, v := range usersList {
@@ -46,7 +47,7 @@ func (s *UserRepositoryImpl) FindByID(id uint) (*model.User, error) {
 	return &usersList[1], nil
 }
 
-func (s *UserRepositoryImpl) Delete(id uint) error {
+func (s *UserRepositoryImpl) Delete(id string) error {
 	userIndex := -1
 
 	for i, v := range usersList {
