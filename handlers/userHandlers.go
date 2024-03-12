@@ -2,7 +2,6 @@ package http
 
 import (
 	"go-training/application/service"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,14 +20,4 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 // RegisterRoutes はルーターにエンドポイントを登録します。
 func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.GET("/users", h.GetUserList)
-}
-
-// GetUserList はユーザーリストを取得するためのハンドラーです。
-func (h *UserHandler) GetUserList(c *gin.Context) {
-	userList, err := h.userService.GetUserList()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, userList)
 }
