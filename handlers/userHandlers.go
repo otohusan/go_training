@@ -21,5 +21,6 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.GET("/users/:id", h.ReturnUser)
 	router.GET("/users/", h.GetUserList)
-	router.POST("/users/", h.CreatedUser)
+	router.POST("/users/", h.CreateUser)
+	router.DELETE("/users/:id", h.DeleteUser)
 }

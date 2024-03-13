@@ -30,7 +30,7 @@ func (h *UserHandler) GetUserList(c *gin.Context) {
 	c.JSON(http.StatusOK, userList)
 }
 
-func (h *UserHandler) CreatedUser(c *gin.Context) {
+func (h *UserHandler) CreateUser(c *gin.Context) {
 	var req CreateUserRequest
 
 	// リクエストボディから JSON データをバインド
@@ -46,4 +46,14 @@ func (h *UserHandler) CreatedUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, "ユーザー作成完了")
+}
+
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+	err := h.userService.DeleteUserByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, "ユーザは削除されました")
 }
