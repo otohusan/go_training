@@ -1,10 +1,15 @@
 package http
 
 import (
+	"go-training/domain/model"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+type CreateUserRequest struct {
+	Name string `json:"name"`
+}
 
 func (h *UserHandler) ReturnUser(c *gin.Context) {
 	id := c.Param("id")
@@ -23,4 +28,22 @@ func (h *UserHandler) GetUserList(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, userList)
+}
+
+func (h *UserHandler) CreatedUser(c *gin.Context) {
+	var req CreateUserRequest
+
+	// リクエストボディから JSON データをバインド
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	createdUser := model.User{Name: req.Name, ID: "1"}
+	err := h.userService.Create(&createdUser)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, "ユーザー作成完了")
 }
