@@ -19,5 +19,6 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 
 // RegisterRoutes はルーターにエンドポイントを登録します。
 func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
-	router.GET("/users/:id", h.GetUserList)
+	router.GET("/users/:id", h.ReturnUser)
+	router.GET("/users/", h.GetUserList)
 }
