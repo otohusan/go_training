@@ -2,6 +2,7 @@ package main
 
 import (
 	"go-training/application/service"
+	"go-training/application/service/auth"
 
 	"github.com/gin-gonic/gin"
 
@@ -15,11 +16,12 @@ func main() {
 	userReposit := repository.NewUserRepositoryImpl()
 
 	userService := service.NewUserService(userReposit)
+	authService := auth.NewAuthService(userReposit)
 
 	router := gin.Default()
 
 	// UserHandlerのインスタンスを作成
-	userHandler := http.NewUserHandler(userService)
+	userHandler := http.NewUserHandler(userService, authService)
 
 	// UserHandlerにルーティングを登録
 	userHandler.RegisterRoutes(router)

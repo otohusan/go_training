@@ -2,18 +2,21 @@ package http
 
 import (
 	"go-training/application/service"
+	"go-training/application/service/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
 	userService *service.UserService
+	authService *auth.AuthService
 }
 
 // NewUserHandler はUserHandlerの新しいインスタンスを作成します。
-func NewUserHandler(userService *service.UserService) *UserHandler {
+func NewUserHandler(userService *service.UserService, authService *auth.AuthService) *UserHandler {
 	return &UserHandler{
 		userService: userService,
+		authService: authService,
 	}
 }
 
@@ -23,4 +26,6 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.GET("/users/", h.GetUserList)
 	router.POST("/users/", h.CreateUser)
 	router.DELETE("/users/:id", h.DeleteUser)
+	router.POST("/auth/", h.Login)
+	router.POST("/auth/parse", h.ParseToken)
 }

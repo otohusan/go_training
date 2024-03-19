@@ -57,3 +57,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, "ユーザは削除されました")
 }
+
+func (h *UserHandler) RegisterUser(c *gin.Context) {
+	c.JSON(http.StatusOK, "ユーザは削除されました")
+}
