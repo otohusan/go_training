@@ -12,7 +12,7 @@ type UserRepositoryImpl struct{}
 
 type users []model.User
 
-var usersList = users{{Name: "sas", ID: "33"}, {Name: "you", ID: "44"}, {Name: "mina", ID: "22"}, {Name: "mina", ID: "55"}}
+var usersList = users{{Name: "sas", ID: "33", Password: "hey"}, {Name: "you", ID: "44", Password: "sa"}, {Name: "mina", ID: "22", Password: "kin"}}
 
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
@@ -25,7 +25,7 @@ func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 
 func (s *UserRepositoryImpl) Create(user *model.User) error {
 	id := int(len(usersList) + 1)
-	CreatedUser := model.User{Name: user.Name, ID: strconv.Itoa(id)}
+	CreatedUser := model.User{Name: user.Name, ID: strconv.Itoa(id), Password: user.Password}
 	usersList = append(usersList, CreatedUser)
 	return nil
 }
@@ -44,7 +44,7 @@ func (s *UserRepositoryImpl) FindByID(id string) (*model.User, error) {
 		return nil, errors.New("userが見つかりません")
 	}
 
-	return &usersList[1], nil
+	return &usersList[userIndex], nil
 }
 
 func (s *UserRepositoryImpl) Delete(id string) error {

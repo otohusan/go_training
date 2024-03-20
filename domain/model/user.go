@@ -4,8 +4,24 @@ import "time"
 
 // User はユーザー情報を表すドメインモデルです。
 type User struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+type UserResponse struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type UserCredentials struct {
+	ID       string `json:"id"`
+	Password string `json:"password"`
+}
+
+type CreatedUserData struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 // Deadline implements context.Context.

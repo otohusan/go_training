@@ -11,7 +11,7 @@ type UserRepositoryImpl struct{}
 // 仮のデータリスト
 type users []model.User
 
-var usersList = users{{Name: "sas", ID: "33"}, {Name: "you", ID: "44"}, {Name: "mina", ID: "22"}, {Name: "mina", ID: "55"}}
+var usersList = users{{Name: "sas", ID: "33", Password: "hey"}, {Name: "you", ID: "44", Password: "sa"}, {Name: "mina", ID: "22", Password: "kin"}}
 
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}

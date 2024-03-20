@@ -15,6 +15,10 @@ func NewAuthService(repo repository.UserRepository) *AuthService {
 	}
 }
 
-func (h *AuthService) RegisterUser(user model.User) error {
-	return h.repo.Create(&user)
+func (h *AuthService) RegisterUser(user model.CreatedUserData) error {
+	userInfo := model.User{
+		Name:     user.Username,
+		Password: user.Password,
+	}
+	return h.repo.Create(&userInfo)
 }

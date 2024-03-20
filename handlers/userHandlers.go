@@ -28,4 +28,5 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.DELETE("/users/:id", h.DeleteUser)
 	router.POST("/auth/", h.Login)
 	router.POST("/auth/parse", h.ParseToken)
+	router.POST("/auth/register", h.Register)
 }
