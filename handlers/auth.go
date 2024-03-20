@@ -48,22 +48,16 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// ユーザー名とパスワードの検証（ここでは仮の検証を行っています）
-	// if creds.Username != "user" || creds.Password != "password" {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "認証情報が無効です"})
-	// 	return
-	// }
-
 	//　ユーザ情報の取得
 	userinfo, err := h.userService.ReturnUser(creds.ID)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "ユーザーが存在しません"})
 		return
 	}
+
 	// パスワードの照合
 	if userinfo.Password != creds.Password {
-		debug := userinfo.Password + " " + creds.Password
-		c.JSON(http.StatusUnauthorized, gin.H{"error": debug})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "パスワードが適切ではありません"})
 		return
 	}
 
