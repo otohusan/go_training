@@ -36,6 +36,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 	h.authService.RegisterUser(creds)
 }
 
+// idとパスワードを基にログインしてJWTを返す
 func (h *UserHandler) Login(c *gin.Context) {
 	var creds model.UserCredentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
@@ -74,6 +75,7 @@ type UserToken struct {
 	UserToken string `json:"usertoken"`
 }
 
+// JWTからIDを取得して、そのユーザの情報を返す
 func (h *UserHandler) ParseToken(c *gin.Context) {
 	var utoken UserToken
 	if err := c.ShouldBindJSON(&utoken); err != nil {

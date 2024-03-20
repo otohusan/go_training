@@ -11,4 +11,5 @@ type UserRepository interface {
 	FindByID(id string) (*model.User, error)
 	Create(user *model.User) error
 	Delete(id string) error
+	GetPost(id string) ([]model.Post, error)
 }

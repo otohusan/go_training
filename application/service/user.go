@@ -32,3 +32,7 @@ func (s *UserService) Create(user *model.User) error {
 func (s *UserService) DeleteUserByID(id string) error {
 	return s.repo.Delete(id)
 }
+
+func (s *UserService) GetPosts(id string) ([]model.Post, error) {
+	return s.repo.GetPost(id)
+}

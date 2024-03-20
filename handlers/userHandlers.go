@@ -29,4 +29,5 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.POST("/auth/", h.Login)
 	router.POST("/auth/parse", h.ParseToken)
 	router.POST("/auth/register", h.Register)
+	router.POST("/post/", h.GetPost)
 }

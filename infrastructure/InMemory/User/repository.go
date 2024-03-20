@@ -13,6 +13,7 @@ type UserRepositoryImpl struct{}
 type users []model.User
 
 var usersList = users{{Name: "sas", ID: "33", Password: "hey"}, {Name: "you", ID: "44", Password: "sa"}, {Name: "mina", ID: "22", Password: "kin"}}
+var postList = []model.Post{{ID: "324", Title: "shiro", Detail: "kore", Author: "33"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}}
 
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
@@ -21,6 +22,18 @@ func NewUserRepositoryImpl() repository.UserRepository {
 func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 
 	return usersList, nil
+}
+
+func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
+	res := []model.Post{}
+
+	for _, v := range postList {
+		if v.Author == id {
+			res = append(res, v)
+		}
+	}
+
+	return res, nil
 }
 
 func (s *UserRepositoryImpl) Create(user *model.User) error {

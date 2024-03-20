@@ -4,9 +4,10 @@ import "time"
 
 // User はユーザー情報を表すドメインモデルです。
 type User struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	ID       string  `json:"id"`
+	Name     string  `json:"name"`
+	Password string  `json:"password"`
+	Posts    *[]Post `json:"posts"`
 }
 
 type UserResponse struct {

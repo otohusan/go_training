@@ -61,3 +61,23 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 func (h *UserHandler) RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, "ユーザは削除されました")
 }
+
+type GetPostRequest struct {
+	ID string `json:"id"`
+}
+
+func (h *UserHandler) GetPost(c *gin.Context) {
+	var req GetPostRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "認証が足りない"})
+		return
+	}
+
+	res, err := h.userService.GetPosts(req.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "IDが存在しない"})
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
+}
