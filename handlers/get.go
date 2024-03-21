@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CreateUserRequest struct {
@@ -80,4 +81,22 @@ func (h *UserHandler) GetPost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, res)
+}
+
+func (h *UserHandler) CreatePost(c *gin.Context) {
+	var req model.RequestedPost
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "認証が足りない"})
+	}
+
+	newUUID := uuid.New()
+
+	newPost := model.Post{
+		Title:  req.Title,
+		Detail: req.Detail,
+		ID:     newUUID.String(),
+		Author: req.Author,
+	}
+
+	h.userService.CreatePost(newPost)
 }

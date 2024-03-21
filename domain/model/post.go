@@ -7,3 +7,10 @@ type Post struct {
 	// userのidをもつ
 	Author string `json:"author"`
 }
+
+type RequestedPost struct {
+	Title  string `json:"title"`
+	Detail string `json:"detail"`
+	// userのidをもつ
+	Author string `json:"author"`
+}
