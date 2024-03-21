@@ -12,4 +12,5 @@ type UserRepository interface {
 	Create(user *model.User) error
 	Delete(id string) error
 	GetPost(id string) ([]model.Post, error)
+	CreatePost(post model.Post) error
 }

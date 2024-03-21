@@ -22,6 +22,10 @@ func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
 	return []model.Post{}, nil
 }
 
+func (s *UserRepositoryImpl) CreatePost(model.Post) error {
+	return nil
+}
+
 func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 
 	return usersList, nil

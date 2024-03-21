@@ -36,6 +36,17 @@ func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
 	return res, nil
 }
 
+func (s *UserRepositoryImpl) CreatePost(post model.Post) error {
+	newPost := model.Post{
+		Title:  post.Title,
+		Detail: post.Detail,
+		Author: post.Author,
+		ID:     post.ID,
+	}
+	postList = append(postList, newPost)
+	return nil
+}
+
 func (s *UserRepositoryImpl) Create(user *model.User) error {
 	id := int(len(usersList) + 1)
 	CreatedUser := model.User{Name: user.Name, ID: strconv.Itoa(id), Password: user.Password}
