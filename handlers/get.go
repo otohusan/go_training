@@ -3,6 +3,7 @@ package http
 import (
 	"go-training/domain/model"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -89,13 +90,25 @@ func (h *UserHandler) CreatePost(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "認証が足りない"})
 	}
 
+	authHeader := c.GetHeader("Authorization")
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "トークンが空です"})
+	}
+
+	id, err := h.authService.ParseToken(token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
 	newUUID := uuid.New()
 
 	newPost := model.Post{
 		Title:  req.Title,
 		Detail: req.Detail,
 		ID:     newUUID.String(),
-		Author: req.Author,
+		Author: id,
 	}
 
 	h.userService.CreatePost(newPost)

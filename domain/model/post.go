@@ -11,6 +11,4 @@ type Post struct {
 type RequestedPost struct {
 	Title  string `json:"title"`
 	Detail string `json:"detail"`
-	// userのidをもつ
-	Author string `json:"author"`
 }
