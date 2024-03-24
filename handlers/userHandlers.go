@@ -3,6 +3,7 @@ package http
 import (
 	"go-training/application/service"
 	"go-training/application/service/auth"
+	products "go-training/handlers/auth"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +14,7 @@ type UserHandler struct {
 }
 
 // NewUserHandler はUserHandlerの新しいインスタンスを作成します。
-func NewUserHandler(userService *service.UserService, authService *auth.AuthService) *UserHandler {
+func createUserHandler(userService *service.UserService, authService *auth.AuthService) *UserHandler {
 	return &UserHandler{
 		userService: userService,
 		authService: authService,
@@ -21,14 +22,24 @@ func NewUserHandler(userService *service.UserService, authService *auth.AuthServ
 }
 
 // RegisterRoutes はルーターにエンドポイントを登録します。
-func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
-	router.GET("/users/:id", h.ReturnUser)
-	router.GET("/users/", h.GetUserList)
-	router.POST("/users/", h.CreateUser)
-	router.DELETE("/users/:id", h.DeleteUser)
-	router.POST("/auth/", h.Login)
-	router.POST("/auth/parse", h.ParseToken)
-	router.POST("/auth/register", h.Register)
-	router.POST("/post/", h.GetPost)
-	router.POST("/post/create", h.CreatePost)
+func SetupRoutes(userService *service.UserService, authService *auth.AuthService, productService *auth.AuthService) *gin.Engine {
+	router := gin.Default()
+
+	productsHandler := products.NewProductHandler(*productService)
+
+	// ここでハンドラーをインスタンス化し、ルーティングに登録
+	userHandler := createUserHandler(userService, authService)
+
+	router.GET("/users/:id", userHandler.ReturnUser)
+	router.GET("/users/", userHandler.GetUserList)
+	router.POST("/users/", userHandler.CreateUser)
+	router.DELETE("/users/:id", userHandler.DeleteUser)
+	router.POST("/auth/", userHandler.Login)
+	router.POST("/auth/parse", userHandler.ParseToken)
+	router.POST("/auth/register", userHandler.Register)
+	router.POST("/post/", userHandler.GetPost)
+	router.POST("/post/create", userHandler.CreatePost)
+	router.GET("/post/tame", productsHandler.CreateProduct)
+
+	return router
 }

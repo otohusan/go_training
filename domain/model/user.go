@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 // User はユーザー情報を表すドメインモデルです。
 type User struct {

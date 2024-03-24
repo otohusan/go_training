@@ -1,4 +1,4 @@
-package main
+package hello
 
 import "fmt"
 
@@ -17,3 +17,5 @@ func main() {
 
 	}
 }
+
+type Run struct{}
