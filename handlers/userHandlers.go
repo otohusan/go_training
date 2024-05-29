@@ -31,14 +31,14 @@ func SetupRoutes(userService *service.UserService, authService *auth.AuthService
 	userHandler := createUserHandler(userService, authService)
 
 	router.GET("/users/:id", userHandler.ReturnUser)
-	router.GET("/users/", userHandler.GetUserList)
+	// router.GET("/users/", userHandler.GetUserList)
 	router.POST("/users/", userHandler.CreateUser)
 	router.DELETE("/users/:id", userHandler.DeleteUser)
 	router.POST("/auth/", userHandler.Login)
 	router.POST("/auth/parse", userHandler.ParseToken)
 	router.POST("/auth/register", userHandler.Register)
-	router.POST("/post/", userHandler.GetPost)
-	router.POST("/post/create", userHandler.CreatePost)
+	// router.POST("/post/", userHandler.GetPost)
+	// router.POST("/post/create", userHandler.CreatePost)
 	router.GET("/post/tame", productsHandler.CreateProduct)
 
 	return router

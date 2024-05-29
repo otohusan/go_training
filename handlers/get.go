@@ -3,10 +3,11 @@ package http
 import (
 	"go-training/domain/model"
 	"net/http"
-	"strings"
+
+	// "strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 )
 
 type CreateUserRequest struct {
@@ -23,14 +24,14 @@ func (h *UserHandler) ReturnUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (h *UserHandler) GetUserList(c *gin.Context) {
-	userList, err := h.userService.GetUserList()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, userList)
-}
+// func (h *UserHandler) GetUserList(c *gin.Context) {
+// 	userList, err := h.userService.GetUserList()
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, userList)
+// }
 
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var req CreateUserRequest
@@ -68,48 +69,48 @@ type GetPostRequest struct {
 	ID string `json:"id"`
 }
 
-func (h *UserHandler) GetPost(c *gin.Context) {
-	var req GetPostRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "認証が足りない"})
-		return
-	}
+// func (h *UserHandler) GetPost(c *gin.Context) {
+// 	var req GetPostRequest
+// 	if err := c.ShouldBindJSON(&req); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "認証が足りない"})
+// 		return
+// 	}
 
-	res, err := h.userService.GetPosts(req.ID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "IDが存在しない"})
-		return
-	}
+// 	res, err := h.userService.GetPosts(req.ID)
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "IDが存在しない"})
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, res)
-}
+// 	c.JSON(http.StatusOK, res)
+// }
 
-func (h *UserHandler) CreatePost(c *gin.Context) {
-	var req model.RequestedPost
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "認証が足りない"})
-	}
+// func (h *UserHandler) CreatePost(c *gin.Context) {
+// 	var req model.RequestedPost
+// 	if err := c.ShouldBindJSON(&req); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "認証が足りない"})
+// 	}
 
-	authHeader := c.GetHeader("Authorization")
-	token := strings.TrimPrefix(authHeader, "Bearer ")
+// 	authHeader := c.GetHeader("Authorization")
+// 	token := strings.TrimPrefix(authHeader, "Bearer ")
 
-	if token == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "トークンが空です"})
-	}
+// 	if token == "" {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "トークンが空です"})
+// 	}
 
-	id, err := h.authService.ParseToken(token)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	}
+// 	id, err := h.authService.ParseToken(token)
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 	}
 
-	newUUID := uuid.New()
+// 	newUUID := uuid.New()
 
-	newPost := model.Post{
-		Title:  req.Title,
-		Detail: req.Detail,
-		ID:     newUUID.String(),
-		Author: id,
-	}
+// 	newPost := model.Post{
+// 		Title:  req.Title,
+// 		Detail: req.Detail,
+// 		ID:     newUUID.String(),
+// 		Author: id,
+// 	}
 
-	h.userService.CreatePost(newPost)
-}
+// 	h.userService.CreatePost(newPost)
+// }

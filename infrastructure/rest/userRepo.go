@@ -17,29 +17,37 @@ func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
+// func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
 
-	return []model.Post{}, nil
-}
+// 	return []model.Post{}, nil
+// }
 
-func (s *UserRepositoryImpl) CreatePost(model.Post) error {
-	return nil
-}
+// func (s *UserRepositoryImpl) CreatePost(model.Post) error {
+// 	return nil
+// }
 
-func (s *UserRepositoryImpl) Get() ([]model.User, error) {
+// func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 
-	return usersList, nil
-}
+// 	return usersList, nil
+// }
 
 func (s *UserRepositoryImpl) Create(user *model.User) error {
 	return nil
 }
 
-func (s *UserRepositoryImpl) FindByID(id string) (*model.User, error) {
+func (s *UserRepositoryImpl) GetByID(id string) (*model.User, error) {
 	// ここにID検索のロジックを実装します。
 	return &model.User{Name: "shin", ID: "33"}, nil
 }
 
 func (s *UserRepositoryImpl) Delete(id string) error {
+	return nil
+}
+
+func (s *UserRepositoryImpl) GetByUsername(username string) (*model.User, error) {
+	return &usersList[1], nil
+}
+
+func (s *UserRepositoryImpl) Update(user *model.User) error {
 	return nil
 }

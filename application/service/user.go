@@ -17,12 +17,12 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) GetUserList() ([]model.User, error) {
-	return s.repo.Get()
-}
+// func (s *UserService) GetUserList() ([]model.User, error) {
+// 	return s.repo.Get()
+// }
 
 func (s *UserService) ReturnUser(id string) (*model.User, error) {
-	return s.repo.FindByID(id)
+	return s.repo.GetByID(id)
 }
 
 func (s *UserService) Create(user *model.User) error {
@@ -33,10 +33,10 @@ func (s *UserService) DeleteUserByID(id string) error {
 	return s.repo.Delete(id)
 }
 
-func (s *UserService) GetPosts(id string) ([]model.Post, error) {
-	return s.repo.GetPost(id)
-}
+// func (s *UserService) GetPosts(id string) ([]model.Post, error) {
+// 	return s.repo.GetPost(id)
+// }
 
-func (s *UserService) CreatePost(post model.Post) error {
-	return s.repo.CreatePost(post)
-}
+// func (s *UserService) CreatePost(post model.Post) error {
+// 	return s.repo.CreatePost(post)
+// }

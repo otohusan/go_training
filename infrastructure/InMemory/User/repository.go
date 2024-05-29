@@ -13,39 +13,40 @@ type UserRepositoryImpl struct{}
 type users []model.User
 
 var usersList = users{{Name: "sas", ID: "33", Password: "hey"}, {Name: "you", ID: "44", Password: "sa"}, {Name: "mina", ID: "22", Password: "kin"}}
-var postList = []model.Post{{ID: "324", Title: "shiro", Detail: "kore", Author: "33"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}}
+
+// var postList = []model.Post{{ID: "324", Title: "shiro", Detail: "kore", Author: "33"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}}
 
 func NewUserRepositoryImpl() repository.UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (s *UserRepositoryImpl) Get() ([]model.User, error) {
+// func (s *UserRepositoryImpl) Get() ([]model.User, error) {
 
-	return usersList, nil
-}
+// 	return usersList, nil
+// }
 
-func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
-	res := []model.Post{}
+// func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
+// 	res := []model.Post{}
 
-	for _, v := range postList {
-		if v.Author == id {
-			res = append(res, v)
-		}
-	}
+// 	for _, v := range postList {
+// 		if v.Author == id {
+// 			res = append(res, v)
+// 		}
+// 	}
 
-	return res, nil
-}
+// 	return res, nil
+// }
 
-func (s *UserRepositoryImpl) CreatePost(post model.Post) error {
-	newPost := model.Post{
-		Title:  post.Title,
-		Detail: post.Detail,
-		Author: post.Author,
-		ID:     post.ID,
-	}
-	postList = append(postList, newPost)
-	return nil
-}
+// func (s *UserRepositoryImpl) CreatePost(post model.Post) error {
+// 	newPost := model.Post{
+// 		Title:  post.Title,
+// 		Detail: post.Detail,
+// 		Author: post.Author,
+// 		ID:     post.ID,
+// 	}
+// 	postList = append(postList, newPost)
+// 	return nil
+// }
 
 func (s *UserRepositoryImpl) Create(user *model.User) error {
 	id := int(len(usersList) + 1)
@@ -54,7 +55,7 @@ func (s *UserRepositoryImpl) Create(user *model.User) error {
 	return nil
 }
 
-func (s *UserRepositoryImpl) FindByID(id string) (*model.User, error) {
+func (s *UserRepositoryImpl) GetByID(id string) (*model.User, error) {
 	userIndex := -1
 
 	for i, v := range usersList {
@@ -69,6 +70,14 @@ func (s *UserRepositoryImpl) FindByID(id string) (*model.User, error) {
 	}
 
 	return &usersList[userIndex], nil
+}
+
+func (s *UserRepositoryImpl) GetByUsername(username string) (*model.User, error) {
+	return &usersList[1], nil
+}
+
+func (s *UserRepositoryImpl) Update(user *model.User) error {
+	return nil
 }
 
 func (s *UserRepositoryImpl) Delete(id string) error {
