@@ -6,6 +6,7 @@ import (
 	"go-training/domain/repository"
 )
 
+// userが適切に値を持ってるか確かめる関数
 func validateUser(user *model.User) error {
 	if user.Name == "" {
 		return errors.New("username cannot be empty")

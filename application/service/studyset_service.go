@@ -6,12 +6,16 @@ import (
 	"go-training/domain/repository"
 )
 
+// StudySetが適切に値を持ってるか確かめる関数
 func validateStudySet(studySet *model.StudySet) error {
 	if studySet.Title == "" {
-		return errors.New("studySet cannot be empty")
+		return errors.New("title cannot be empty")
 	}
 	if studySet.Description == "" {
 		return errors.New("password cannot be empty")
+	}
+	if studySet.UserID == "" {
+		return errors.New("UserID cannot be empty")
 	}
 	return nil
 }
