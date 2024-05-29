@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
+	inmemory "go-training/infrastructure/InMemory"
 	"sync"
 )
 
@@ -13,9 +14,13 @@ type FlashcardRepository struct {
 }
 
 func NewFlashcardRepository() repository.FlashcardRepository {
-	return &FlashcardRepository{
+	repo := &FlashcardRepository{
 		flashcards: make(map[string]*model.Flashcard),
 	}
+	for _, flashcard := range inmemory.InitializeFlashcards() {
+		repo.flashcards[flashcard.ID] = flashcard
+	}
+	return repo
 }
 
 func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {

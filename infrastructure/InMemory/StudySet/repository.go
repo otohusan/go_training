@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
+	inmemory "go-training/infrastructure/InMemory"
 	"sync"
 )
 
@@ -13,9 +14,13 @@ type StudySetRepository struct {
 }
 
 func NewStudySetRepository() repository.StudySetRepository {
-	return &StudySetRepository{
+	repo := &StudySetRepository{
 		studySets: make(map[string]*model.StudySet),
 	}
+	for _, studySet := range inmemory.InitializeStudySets() {
+		repo.studySets[studySet.ID] = studySet
+	}
+	return repo
 }
 
 func (r *StudySetRepository) Create(studySet *model.StudySet) error {

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
+	inmemory "go-training/infrastructure/InMemory"
 	"sync"
 )
 
@@ -13,9 +14,13 @@ type UserRepository struct {
 }
 
 func NewUserRepository() repository.UserRepository {
-	return &UserRepository{
+	repo := &UserRepository{
 		users: make(map[string]*model.User),
 	}
+	for _, user := range inmemory.InitializeUsers() {
+		repo.users[user.ID] = user
+	}
+	return repo
 }
 
 func (r *UserRepository) Create(user *model.User) error {
