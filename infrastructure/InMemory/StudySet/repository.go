@@ -2,6 +2,7 @@ package studySet
 
 import (
 	"errors"
+	"fmt"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
@@ -26,6 +27,9 @@ func NewStudySetRepository() repository.StudySetRepository {
 func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+
+	// 学習セットの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
+	studySet.ID = fmt.Sprintf("%d", len(r.studySets)+1)
 
 	if _, exists := r.studySets[studySet.ID]; exists {
 		return errors.New("study set already exists")

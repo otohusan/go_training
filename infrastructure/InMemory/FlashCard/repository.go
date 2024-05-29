@@ -2,6 +2,7 @@ package flashcard
 
 import (
 	"errors"
+	"fmt"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
@@ -26,6 +27,9 @@ func NewFlashcardRepository() repository.FlashcardRepository {
 func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+
+	// フラッシュカードの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
+	flashcard.ID = fmt.Sprintf("%d", len(r.flashcards)+1)
 
 	if _, exists := r.flashcards[flashcard.ID]; exists {
 		return errors.New("flashcard already exists")
