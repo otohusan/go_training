@@ -16,7 +16,7 @@ type CreateUserRequest struct {
 
 func (h *UserHandler) ReturnUser(c *gin.Context) {
 	id := c.Param("id")
-	user, err := h.userService.ReturnUser(id)
+	user, err := h.userService.GetUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -43,7 +43,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	createdUser := model.User{Name: req.Name, ID: "1"}
-	err := h.userService.Create(&createdUser)
+	err := h.userService.CreateUser(&createdUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -53,7 +53,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
-	err := h.userService.DeleteUserByID(id)
+	err := h.userService.DeleteUser(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

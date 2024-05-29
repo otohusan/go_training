@@ -50,7 +50,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 
 	//　ユーザ情報の取得
-	userinfo, err := h.userService.ReturnUser(creds.ID)
+	userinfo, err := h.userService.GetUserByID(creds.ID)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "ユーザーが存在しません"})
 		return
@@ -98,7 +98,7 @@ func (h *UserHandler) ParseToken(c *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		id := claims["id"].(string)
 		// ユーザーを返す
-		userinfo, err := h.userService.ReturnUser(id)
+		userinfo, err := h.userService.GetUserByID(id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 		}
