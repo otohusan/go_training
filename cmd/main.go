@@ -34,6 +34,7 @@ func setupUserRoutes(router *gin.Engine, userHandler *handlers.UserHandler) {
 	// ユーザー関連のルートをグループ化
 	userRoutes := router.Group("/users")
 	{
+		userRoutes.GET("/", userHandler.GetAllUsers)
 		userRoutes.POST("/", userHandler.CreateUser)
 		userRoutes.GET("/:id", userHandler.GetUserByID)
 		userRoutes.GET("/username/:username", userHandler.GetUserByUsername)

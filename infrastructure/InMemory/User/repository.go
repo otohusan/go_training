@@ -2,6 +2,7 @@ package inmemory
 
 import (
 	"errors"
+	"fmt"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
@@ -26,6 +27,9 @@ func NewUserRepository() repository.UserRepository {
 func (r *UserRepository) Create(user *model.User) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+
+	// ユーザーの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
+	user.ID = fmt.Sprintf("%d", len(r.users)+1)
 
 	if _, exists := r.users[user.ID]; exists {
 		return errors.New("user already exists")
@@ -81,4 +85,15 @@ func (r *UserRepository) Delete(id string) error {
 
 	delete(r.users, id)
 	return nil
+}
+
+func (r *UserRepository) GetAll() ([]*model.User, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	var users []*model.User
+	for _, user := range r.users {
+		users = append(users, user)
+	}
+	return users, nil
 }

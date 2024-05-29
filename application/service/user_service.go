@@ -34,3 +34,7 @@ func (s *UserService) UpdateUser(user *model.User) error {
 func (s *UserService) DeleteUser(id string) error {
 	return s.repo.Delete(id)
 }
+
+func (s *UserService) GetAllUsers() ([]*model.User, error) {
+	return s.repo.GetAll()
+}

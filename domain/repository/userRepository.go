@@ -8,4 +8,5 @@ type UserRepository interface {
 	GetByUsername(username string) (*model.User, error)
 	Update(user *model.User) error
 	Delete(id string) error
+	GetAll() ([]*model.User, error)
 }

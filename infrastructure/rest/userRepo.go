@@ -51,3 +51,8 @@ func (s *UserRepositoryImpl) GetByUsername(username string) (*model.User, error)
 func (s *UserRepositoryImpl) Update(user *model.User) error {
 	return nil
 }
+
+func (r *UserRepositoryImpl) GetAll() ([]*model.User, error) {
+
+	return []*model.User{}, nil
+}
