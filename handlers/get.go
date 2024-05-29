@@ -1,7 +1,6 @@
-package http
+package handlers
 
 import (
-	"go-training/domain/model"
 	"net/http"
 
 	// "strings"
@@ -33,41 +32,41 @@ func (h *UserHandler) ReturnUser(c *gin.Context) {
 // 	c.JSON(http.StatusOK, userList)
 // }
 
-func (h *UserHandler) CreateUser(c *gin.Context) {
-	var req CreateUserRequest
+// func (h *UserHandler) CreateUser(c *gin.Context) {
+// 	var req CreateUserRequest
 
-	// リクエストボディから JSON データをバインド
-	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// 	// リクエストボディから JSON データをバインド
+// 	if err := c.BindJSON(&req); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	createdUser := model.User{Name: req.Name, ID: "1"}
-	err := h.userService.CreateUser(&createdUser)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, "ユーザー作成完了")
-}
+// 	createdUser := model.User{Name: req.Name, ID: "1"}
+// 	err := h.userService.CreateUser(&createdUser)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, "ユーザー作成完了")
+// }
 
-func (h *UserHandler) DeleteUser(c *gin.Context) {
-	id := c.Param("id")
-	err := h.userService.DeleteUser(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, "ユーザは削除されました")
-}
+// func (h *UserHandler) DeleteUser(c *gin.Context) {
+// 	id := c.Param("id")
+// 	err := h.userService.DeleteUser(id)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, "ユーザは削除されました")
+// }
 
-func (h *UserHandler) RegisterUser(c *gin.Context) {
-	c.JSON(http.StatusOK, "ユーザは削除されました")
-}
+// func (h *UserHandler) RegisterUser(c *gin.Context) {
+// 	c.JSON(http.StatusOK, "ユーザは削除されました")
+// }
 
-type GetPostRequest struct {
-	ID string `json:"id"`
-}
+// type GetPostRequest struct {
+// 	ID string `json:"id"`
+// }
 
 // func (h *UserHandler) GetPost(c *gin.Context) {
 // 	var req GetPostRequest

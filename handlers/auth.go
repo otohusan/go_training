@@ -1,4 +1,4 @@
-package http
+package handlers
 
 import (
 	"net/http"
@@ -27,14 +27,14 @@ func CreateToken(id string) (string, error) {
 }
 
 // 新規登録
-func (h *UserHandler) Register(c *gin.Context) {
-	var creds model.CreatedUserData
-	if err := c.ShouldBindJSON(&creds); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": "認証情報のバインドに失敗しました"})
-		return
-	}
-	h.authService.RegisterUser(creds)
-}
+// func (h *UserHandler) Register(c *gin.Context) {
+// 	var creds model.CreatedUserData
+// 	if err := c.ShouldBindJSON(&creds); err != nil {
+// 		c.JSON(http.StatusForbidden, gin.H{"error": "認証情報のバインドに失敗しました"})
+// 		return
+// 	}
+// 	h.authService.RegisterUser(creds)
+// }
 
 // idとパスワードを基にログインしてJWTを返す
 func (h *UserHandler) Login(c *gin.Context) {

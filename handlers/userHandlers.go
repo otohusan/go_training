@@ -1,45 +1,88 @@
-package http
+package handlers
 
 import (
 	"go-training/application/service"
-	"go-training/application/service/auth"
-	products "go-training/handlers/auth"
+	"go-training/domain/model"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
 	userService *service.UserService
-	authService *auth.AuthService
 }
 
-// NewUserHandler はUserHandlerの新しいインスタンスを作成します。
-func createUserHandler(userService *service.UserService, authService *auth.AuthService) *UserHandler {
-	return &UserHandler{
-		userService: userService,
-		authService: authService,
+func NewUserHandler(userService *service.UserService) *UserHandler {
+	return &UserHandler{userService: userService}
+}
+
+func (h *UserHandler) CreateUser(c *gin.Context) {
+	var user model.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
 	}
+
+	err := h.userService.CreateUser(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user created successfully"})
 }
 
-// RegisterRoutes はルーターにエンドポイントを登録します。
-func SetupRoutes(userService *service.UserService, authService *auth.AuthService, productService *auth.AuthService) *gin.Engine {
-	router := gin.Default()
+func (h *UserHandler) GetUserByID(c *gin.Context) {
+	id := c.Param("id")
 
-	productsHandler := products.NewProductHandler(*productService)
+	user, err := h.userService.GetUserByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
 
-	// ここでハンドラーをインスタンス化し、ルーティングに登録
-	userHandler := createUserHandler(userService, authService)
+	c.JSON(http.StatusOK, user)
+}
 
-	router.GET("/users/:id", userHandler.ReturnUser)
-	// router.GET("/users/", userHandler.GetUserList)
-	router.POST("/users/", userHandler.CreateUser)
-	router.DELETE("/users/:id", userHandler.DeleteUser)
-	router.POST("/auth/", userHandler.Login)
-	router.POST("/auth/parse", userHandler.ParseToken)
-	router.POST("/auth/register", userHandler.Register)
-	// router.POST("/post/", userHandler.GetPost)
-	// router.POST("/post/create", userHandler.CreatePost)
-	router.GET("/post/tame", productsHandler.CreateProduct)
+func (h *UserHandler) GetUserByUsername(c *gin.Context) {
+	username := c.Param("username")
 
-	return router
+	user, err := h.userService.GetUserByUsername(username)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	var user model.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	id := c.Param("id")
+	user.ID = id
+
+	err := h.userService.UpdateUser(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user updated successfully"})
+}
+
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+
+	err := h.userService.DeleteUser(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
 }
