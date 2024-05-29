@@ -6,6 +6,16 @@ import (
 	"go-training/domain/repository"
 )
 
+func validateUser(user *model.User) error {
+	if user.Name == "" {
+		return errors.New("username cannot be empty")
+	}
+	if user.Password == "" {
+		return errors.New("password cannot be empty")
+	}
+	return nil
+}
+
 type UserService struct {
 	repo repository.UserRepository
 }
@@ -17,12 +27,8 @@ func NewUserService(repo repository.UserRepository) *UserService {
 }
 
 func (s *UserService) CreateUser(user *model.User) error {
-	// 入力データのバリデーション
-	if user.Name == "" {
-		return errors.New("username cannot be empty")
-	}
-	if user.Password == "" {
-		return errors.New("password cannot be empty")
+	if err := validateUser(user); err != nil {
+		return err
 	}
 
 	return s.repo.Create(user)
@@ -37,6 +43,10 @@ func (s *UserService) GetUserByUsername(username string) (*model.User, error) {
 }
 
 func (s *UserService) UpdateUser(user *model.User) error {
+	if err := validateUser(user); err != nil {
+		return err
+	}
+
 	return s.repo.Update(user)
 }
 
