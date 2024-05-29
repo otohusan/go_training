@@ -1,4 +1,4 @@
-package inmemory
+package studySet
 
 import (
 	"errors"
