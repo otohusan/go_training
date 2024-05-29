@@ -1,9 +1,20 @@
 package service
 
 import (
+	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 )
+
+func validateStudySet(studySet *model.StudySet) error {
+	if studySet.Title == "" {
+		return errors.New("studySet cannot be empty")
+	}
+	if studySet.Description == "" {
+		return errors.New("password cannot be empty")
+	}
+	return nil
+}
 
 type StudySetService struct {
 	repo repository.StudySetRepository
@@ -16,6 +27,10 @@ func NewStudySetService(repo repository.StudySetRepository) *StudySetService {
 }
 
 func (s *StudySetService) CreateStudySet(studySet *model.StudySet) error {
+	if err := validateStudySet(studySet); err != nil {
+		return err
+	}
+
 	return s.repo.Create(studySet)
 }
 
@@ -28,6 +43,10 @@ func (s *StudySetService) GetStudySetsByUserID(userID string) ([]*model.StudySet
 }
 
 func (s *StudySetService) UpdateStudySet(studySet *model.StudySet) error {
+	if err := validateStudySet(studySet); err != nil {
+		return err
+	}
+
 	return s.repo.Update(studySet)
 }
 
