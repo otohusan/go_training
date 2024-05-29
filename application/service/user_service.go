@@ -8,6 +8,9 @@ import (
 
 // userが適切に値を持ってるか確かめる関数
 func validateUser(user *model.User) error {
+	if user.ID != "" {
+		return errors.New("id have to be null")
+	}
 	if user.Name == "" {
 		return errors.New("username cannot be empty")
 	}

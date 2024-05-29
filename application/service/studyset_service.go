@@ -8,6 +8,9 @@ import (
 
 // StudySetが適切に値を持ってるか確かめる関数
 func validateStudySet(studySet *model.StudySet) error {
+	if studySet.ID != "" {
+		return errors.New("id have to be null")
+	}
 	if studySet.Title == "" {
 		return errors.New("title cannot be empty")
 	}

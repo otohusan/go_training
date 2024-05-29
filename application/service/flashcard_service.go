@@ -8,6 +8,9 @@ import (
 
 // FlashCardが適切に値を持ってるか確かめる関数
 func validateFlashCard(flashcard *model.Flashcard) error {
+	if flashcard.ID != "" {
+		return errors.New("id have to be null")
+	}
 	if flashcard.Question == "" {
 		return errors.New("question cannot be empty")
 	}
