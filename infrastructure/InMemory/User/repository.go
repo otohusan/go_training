@@ -1,100 +1,79 @@
-package repository
+package inmemory
 
 import (
-	// "context"
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
-	"strconv"
+	"sync"
 )
 
-type UserRepositoryImpl struct{}
-
-type users []model.User
-
-var usersList = users{{Name: "sas", ID: "33", Password: "hey"}, {Name: "you", ID: "44", Password: "sa"}, {Name: "mina", ID: "22", Password: "kin"}}
-
-// var postList = []model.Post{{ID: "324", Title: "shiro", Detail: "kore", Author: "33"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}, {ID: "324", Title: "o", Detail: "e", Author: "22"}}
-
-func NewUserRepositoryImpl() repository.UserRepository {
-	return &UserRepositoryImpl{}
+type UserRepository struct {
+	mu    sync.Mutex
+	users map[string]*model.User
 }
 
-// func (s *UserRepositoryImpl) Get() ([]model.User, error) {
+func NewUserRepository() repository.UserRepository {
+	return &UserRepository{
+		users: make(map[string]*model.User),
+	}
+}
 
-// 	return usersList, nil
-// }
+func (r *UserRepository) Create(user *model.User) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
-// func (s *UserRepositoryImpl) GetPost(id string) ([]model.Post, error) {
-// 	res := []model.Post{}
+	if _, exists := r.users[user.ID]; exists {
+		return errors.New("user already exists")
+	}
 
-// 	for _, v := range postList {
-// 		if v.Author == id {
-// 			res = append(res, v)
-// 		}
-// 	}
-
-// 	return res, nil
-// }
-
-// func (s *UserRepositoryImpl) CreatePost(post model.Post) error {
-// 	newPost := model.Post{
-// 		Title:  post.Title,
-// 		Detail: post.Detail,
-// 		Author: post.Author,
-// 		ID:     post.ID,
-// 	}
-// 	postList = append(postList, newPost)
-// 	return nil
-// }
-
-func (s *UserRepositoryImpl) Create(user *model.User) error {
-	id := int(len(usersList) + 1)
-	CreatedUser := model.User{Name: user.Name, ID: strconv.Itoa(id), Password: user.Password}
-	usersList = append(usersList, CreatedUser)
+	r.users[user.ID] = user
 	return nil
 }
 
-func (s *UserRepositoryImpl) GetByID(id string) (*model.User, error) {
-	userIndex := -1
+func (r *UserRepository) GetByID(id string) (*model.User, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
-	for i, v := range usersList {
-		if v.ID == id {
-			userIndex = i
-			break
+	user, exists := r.users[id]
+	if !exists {
+		return nil, errors.New("user not found")
+	}
+
+	return user, nil
+}
+
+func (r *UserRepository) GetByUsername(username string) (*model.User, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for _, user := range r.users {
+		if user.Name == username {
+			return user, nil
 		}
 	}
+	return nil, errors.New("user not found")
+}
 
-	if userIndex == -1 {
-		return nil, errors.New("userが見つかりません")
+func (r *UserRepository) Update(user *model.User) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, exists := r.users[user.ID]; !exists {
+		return errors.New("user not found")
 	}
 
-	return &usersList[userIndex], nil
-}
-
-func (s *UserRepositoryImpl) GetByUsername(username string) (*model.User, error) {
-	return &usersList[1], nil
-}
-
-func (s *UserRepositoryImpl) Update(user *model.User) error {
+	r.users[user.ID] = user
 	return nil
 }
 
-func (s *UserRepositoryImpl) Delete(id string) error {
-	userIndex := -1
+func (r *UserRepository) Delete(id string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
-	for i, v := range usersList {
-		if v.ID == id {
-			userIndex = i
-			break
-		}
+	if _, exists := r.users[id]; !exists {
+		return errors.New("user not found")
 	}
 
-	if userIndex == -1 {
-		return errors.New("userが見つかりません")
-	}
-
-	usersList = append(usersList[:userIndex], usersList[userIndex+1:]...)
-	// ここにID検索のロジックを実装します。
+	delete(r.users, id)
 	return nil
 }
