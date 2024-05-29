@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	userReposit := repository.NewUserRepositoryImpl()
+	userReposit := repository.NewUserRepository()
 
 	userService := service.NewUserService(userReposit)
 	authService := auth.NewAuthService(userReposit)
