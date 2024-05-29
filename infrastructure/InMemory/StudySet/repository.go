@@ -31,6 +31,17 @@ func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 	// 学習セットの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
 	studySet.ID = fmt.Sprintf("%d", len(r.studySets)+1)
 
+	// 外部キーのチェック: UserIDが存在するか
+	isUserExists := false
+	for _, user := range inmemory.InitializeUsers() {
+		if user.ID == studySet.ID {
+			isUserExists = true
+		}
+	}
+	if !isUserExists {
+		return errors.New("user doesn't exist")
+	}
+
 	if _, exists := r.studySets[studySet.ID]; exists {
 		return errors.New("study set already exists")
 	}
