@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 )
@@ -16,6 +17,14 @@ func NewUserService(repo repository.UserRepository) *UserService {
 }
 
 func (s *UserService) CreateUser(user *model.User) error {
+	// 入力データのバリデーション
+	if user.Name == "" {
+		return errors.New("username cannot be empty")
+	}
+	if user.Password == "" {
+		return errors.New("password cannot be empty")
+	}
+
 	return s.repo.Create(user)
 }
 
