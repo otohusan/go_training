@@ -28,6 +28,17 @@ func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	// 外部キー制約
+	isStudySetExists := false
+	for _, studySet := range inmemory.InitializeStudySets() {
+		if studySet.ID == flashcard.StudySetID {
+			isStudySetExists = true
+		}
+	}
+	if !isStudySetExists {
+		return errors.New("flashCard doesn't exists")
+	}
+
 	// フラッシュカードの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
 	flashcard.ID = fmt.Sprintf("%d", len(r.flashcards)+1)
 
