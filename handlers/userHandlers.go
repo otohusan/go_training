@@ -3,6 +3,7 @@ package handlers
 import (
 	"go-training/application/service"
 	"go-training/domain/model"
+	"go-training/utils"
 	"net/http"
 	"time"
 
@@ -59,7 +60,16 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 }
 
 func (h *UserHandler) GetUserByID(c *gin.Context) {
-	id := c.Param("userID")
+	// id := c.Param("userID")
+
+	authHeader := c.GetHeader("Authorization")
+
+	id, err1 := utils.ParseToken(authHeader)
+
+	if err1 != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "invalid token"})
+		return
+	}
 
 	user, err := h.userService.GetUserByID(id)
 	if err != nil {
