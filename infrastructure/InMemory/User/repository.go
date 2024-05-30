@@ -29,6 +29,12 @@ func (r *UserRepository) CreateWithEmail(user *model.User) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	for _, userSet := range r.users {
+		if userSet.Email == user.Email {
+			return errors.New("the email can't use")
+		}
+	}
+
 	// uuid作成
 	user.ID = uuid.New().String()
 
