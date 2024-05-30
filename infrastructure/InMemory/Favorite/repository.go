@@ -32,6 +32,28 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	// 外部キーのチェック: UserIDが存在するか
+	isUserExists := false
+	for _, user := range inmemory.InitializeUsers() {
+		if user.ID == userID {
+			isUserExists = true
+			break
+		}
+	}
+	if !isUserExists {
+		return errors.New("user doesn't exist")
+	}
+	isStudySetExists := false
+	for _, studySet := range inmemory.InitializeStudySets() {
+		if studySet.ID == studySetID {
+			isStudySetExists = true
+			break
+		}
+	}
+	if !isStudySetExists {
+		return errors.New("flashCard doesn't exists")
+	}
+
 	// 新しいIDをUUIDで生成
 	tableID := uuid.New().String()
 	newFavorite := &model.Favorite{
