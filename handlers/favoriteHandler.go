@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"go-training/application/service"
-	"go-training/domain/model"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,15 +16,8 @@ func NewFavoriteHandler(favoriteService *service.FavoriteService) *FavoriteHandl
 }
 
 func (h *FavoriteHandler) AddFavorite(c *gin.Context) {
-	var favorite model.Favorite
-
 	userID := c.Param("userID")
 	studySetID := c.Param("studySetID")
-
-	if err := c.ShouldBindJSON(&favorite); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-		return
-	}
 
 	err := h.favoriteService.AddFavorite(userID, studySetID)
 	if err != nil {
