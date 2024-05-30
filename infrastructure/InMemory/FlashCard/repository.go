@@ -2,11 +2,12 @@ package flashcard
 
 import (
 	"errors"
-	"fmt"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 type FlashcardRepository struct {
@@ -39,8 +40,8 @@ func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {
 		return errors.New("flashCard doesn't exists")
 	}
 
-	// フラッシュカードの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
-	flashcard.ID = fmt.Sprintf("%d", len(r.flashcards)+1)
+	// uuid作成
+	flashcard.ID = uuid.New().String()
 
 	if _, exists := r.flashcards[flashcard.ID]; exists {
 		return errors.New("flashcard already exists")

@@ -2,11 +2,12 @@ package user
 
 import (
 	"errors"
-	"fmt"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 type UserRepository struct {
@@ -28,8 +29,8 @@ func (r *UserRepository) Create(user *model.User) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	// ユーザーの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
-	user.ID = fmt.Sprintf("%d", len(r.users)+1)
+	// uuid作成
+	user.ID = uuid.New().String()
 
 	if _, exists := r.users[user.ID]; exists {
 		return errors.New("user already exists")

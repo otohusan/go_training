@@ -61,6 +61,7 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	authUserRoutes := router.Group("/users")
 	authUserRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
+		// 万が一passwordが誤って含まれると同時にpasswordも変えてしまう
 		authUserRoutes.PUT("/:userID", userHandler.UpdateUser)
 		authUserRoutes.DELETE("/:userID", userHandler.DeleteUser)
 	}

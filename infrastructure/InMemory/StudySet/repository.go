@@ -2,12 +2,13 @@ package studySet
 
 import (
 	"errors"
-	"fmt"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
 	"strings"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 type StudySetRepository struct {
@@ -40,8 +41,8 @@ func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 		return errors.New("user doesn't exist")
 	}
 
-	// 学習セットの数を基に新しいIDを生成 TODO:削除とかあったら、id被る
-	studySet.ID = fmt.Sprintf("%d", len(r.studySets)+1)
+	// uuid作成
+	studySet.ID = uuid.New().String()
 
 	if _, exists := r.studySets[studySet.ID]; exists {
 		return errors.New("study set already exists")
