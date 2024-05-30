@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
+	inmemory "go-training/infrastructure/InMemory"
 	"sync"
 	"time"
 
@@ -16,9 +17,15 @@ type FavoriteRepository struct {
 }
 
 func NewFavoriteRepository() repository.FavoriteRepository {
-	return &FavoriteRepository{
+	repo := &FavoriteRepository{
 		favorites: make(map[string]*model.Favorite),
 	}
+
+	for _, favorite := range inmemory.InitializeFavorites() {
+		repo.favorites[favorite.ID] = favorite
+	}
+
+	return repo
 }
 
 func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {

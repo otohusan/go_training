@@ -65,3 +65,21 @@ func InitializeFlashcards() []*model.Flashcard {
 		},
 	}
 }
+
+func InitializeFavorites() []*model.Favorite {
+	favorites := []*model.Favorite{
+		{
+			ID:         "1",
+			UserID:     "1",
+			StudySetID: "1",
+			CreatedAt:  time.Now(),
+		},
+		{
+			ID:         "2",
+			UserID:     "1",
+			StudySetID: "2",
+			CreatedAt:  time.Now(),
+		},
+	}
+	return favorites
+}
