@@ -10,8 +10,6 @@ import (
 	"go-training/domain/model"
 )
 
-var mySigningKey = []byte("secret") // 実際の環境では安全にキーを管理してください。
-
 // CreateToken はJWTトークンを生成します。
 func CreateToken(id string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
