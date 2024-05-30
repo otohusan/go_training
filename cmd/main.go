@@ -53,44 +53,63 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 		userRoutes.POST("/", userHandler.CreateUser)
 		userRoutes.GET("/:userID", userHandler.GetUserByID)
 		userRoutes.GET("/username/:username", userHandler.GetUserByUsername)
+		// favoriteHandlerをここで呼び出すのが気になるけど、エンドポイントがこっちの方が直感的
+		userRoutes.GET("/:userID/favorite", favoriteHandler.GetFavoriteStudySetsByUserID)
 	}
 
 	// 認証が必要なユーザー関連のルート
 	authUserRoutes := router.Group("/users")
-	authUserRoutes.Use(middleware.AuthMiddleware())
+	authUserRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
 		authUserRoutes.PUT("/:userID", userHandler.UpdateUser)
 		authUserRoutes.DELETE("/:userID", userHandler.DeleteUser)
-		// favoriteHandlerをここで呼び出すのが気になるけど、エンドポイントがこっちの方が直感的
-		authUserRoutes.GET("/:userID/favorite", favoriteHandler.GetFavoriteStudySetsByUserID)
 	}
 
 	// 学習セット関連のルートをグループ化
 	studySetRoutes := router.Group("/studysets")
 	{
-		studySetRoutes.POST("/", studySetHandler.CreateStudySet)
 		studySetRoutes.GET("/:id", studySetHandler.GetStudySetByID)
 		studySetRoutes.GET("/user/:userID", studySetHandler.GetStudySetsByUserID)
-		studySetRoutes.PUT("/:id", studySetHandler.UpdateStudySet)
-		studySetRoutes.DELETE("/:id", studySetHandler.DeleteStudySet)
 		studySetRoutes.GET("/search", studySetHandler.SearchStudySetsByTitle)
+	}
+
+	// 認証が必要な学習セット関連のルート
+	authStudySetRoutes := router.Group("/studysets")
+	authStudySetRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
+	{
+		authStudySetRoutes.POST("/", studySetHandler.CreateStudySet)
+		authStudySetRoutes.PUT("/:id", studySetHandler.UpdateStudySet)
+		authStudySetRoutes.DELETE("/:id", studySetHandler.DeleteStudySet)
 	}
 
 	// フラッシュカード関連のルートをグループ化
 	flashcardRoutes := router.Group("/flashcards")
 	{
-		flashcardRoutes.POST("/", flashcardHandler.CreateFlashcard)
 		flashcardRoutes.GET("/:id", flashcardHandler.GetFlashcardByID)
 		flashcardRoutes.GET("/studyset/:studySetID", flashcardHandler.GetFlashcardsByStudySetID)
-		flashcardRoutes.PUT("/:id", flashcardHandler.UpdateFlashcard)
-		flashcardRoutes.DELETE("/:id", flashcardHandler.DeleteFlashcard)
 	}
 
+	// 認証が必要なフラッシュカード関連のルート
+	authFlashcardRoutes := router.Group("/flashcards")
+	authFlashcardRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
+	{
+		authFlashcardRoutes.POST("/", flashcardHandler.CreateFlashcard)
+		authFlashcardRoutes.PUT("/:id", flashcardHandler.UpdateFlashcard)
+		authFlashcardRoutes.DELETE("/:id", flashcardHandler.DeleteFlashcard)
+	}
+
+	// お気に入り関連のルート
 	favoriteRoutes := router.Group("favorite")
 	{
-		favoriteRoutes.POST("/user/:userID/studyset/:studySetID", favoriteHandler.AddFavorite)
-		favoriteRoutes.DELETE("/user/:userID/studyset/:studySetID", favoriteHandler.RemoveFavorite)
-		favoriteRoutes.GET("/user/:userID", favoriteHandler.GetFavoritesByUserID)
 		favoriteRoutes.GET("/is_favorite", favoriteHandler.IsFavorite)
+	}
+
+	// 認証が必要なお気に入り関連のルート
+	authFavoriteRoutes := router.Group("/favorites")
+	authFavoriteRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
+	{
+		authFavoriteRoutes.POST("/user/:userID/studyset/:studySetID", favoriteHandler.AddFavorite)
+		authFavoriteRoutes.DELETE("/user/:userID/studyset/:studySetID", favoriteHandler.RemoveFavorite)
+		authFavoriteRoutes.GET("/user/:userID", favoriteHandler.GetFavoritesByUserID)
 	}
 }
