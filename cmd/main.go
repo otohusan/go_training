@@ -50,8 +50,9 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	userRoutes := router.Group("/users")
 	{
 		userRoutes.GET("/", userHandler.GetAllUsers)
-		userRoutes.POST("/", userHandler.CreateUser)
+		userRoutes.POST("/", userHandler.CreateUserWithEmail)
 		userRoutes.GET("/:userID", userHandler.GetUserByID)
+		userRoutes.POST("/login", userHandler.LoginWithEmail)
 		userRoutes.GET("/username/:username", userHandler.GetUserByUsername)
 		// favoriteHandlerをここで呼び出すのが気になるけど、エンドポイントがこっちの方が直感的
 		userRoutes.GET("/:userID/favorite", favoriteHandler.GetFavoriteStudySetsByUserID)

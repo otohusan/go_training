@@ -25,7 +25,7 @@ func NewUserRepository() repository.UserRepository {
 	return repo
 }
 
-func (r *UserRepository) Create(user *model.User) error {
+func (r *UserRepository) CreateWithEmail(user *model.User) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -97,4 +97,15 @@ func (r *UserRepository) GetAll() ([]*model.User, error) {
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+func (r *UserRepository) GetByEmail(email string) (*model.User, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for _, user := range r.users {
+		if user.Email == email {
+			return user, nil
+		}
+	}
+	return nil, errors.New("user not found")
 }

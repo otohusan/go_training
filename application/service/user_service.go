@@ -27,12 +27,15 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) CreateUser(user *model.User) error {
+func (s *UserService) CreateUserWithEmail(user *model.User) error {
 	if err := validateUser(user); err != nil {
 		return err
 	}
+	if user.Email == "" {
+		return errors.New("email cannot be empty")
+	}
 
-	return s.repo.Create(user)
+	return s.repo.CreateWithEmail(user)
 }
 
 func (s *UserService) GetUserByID(id string) (*model.User, error) {
@@ -53,6 +56,10 @@ func (s *UserService) UpdateUser(user *model.User) error {
 
 func (s *UserService) DeleteUser(id string) error {
 	return s.repo.Delete(id)
+}
+
+func (s *UserService) GetUserByEmail(email string) (*model.User, error) {
+	return s.repo.GetByEmail(email)
 }
 
 func (s *UserService) GetAllUsers() ([]*model.User, error) {

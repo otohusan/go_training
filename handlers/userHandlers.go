@@ -21,7 +21,7 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 	return &UserHandler{userService: userService}
 }
 
-func (h *UserHandler) CreateUser(c *gin.Context) {
+func (h *UserHandler) CreateUserWithEmail(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
@@ -37,7 +37,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	user.Password = string(hashedPassword)
 
 	// ユーザの作成
-	err = h.userService.CreateUser(&user)
+	err = h.userService.CreateUserWithEmail(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -137,6 +137,43 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
+}
+
+func (h *UserHandler) LoginWithEmail(c *gin.Context) {
+	var req *model.User
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	// emailからユーザ情報を取得
+	user, err := h.userService.GetUserByEmail(req.Email)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "there are not the email"})
+		return
+	}
+
+	// パスワードを比較
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, user)
+		return
+	}
+
+	// トークンの発行
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userID": user.ID,
+		"exp":    time.Now().Add(time.Hour * 72).Unix(),
+	})
+
+	tokenString, err := token.SignedString(mySigningKey)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+
+	// トークンを返す
+	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
 func (h *UserHandler) GetAllUsers(c *gin.Context) {

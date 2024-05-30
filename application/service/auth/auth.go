@@ -25,7 +25,7 @@ func (h *AuthService) RegisterUser(user model.CreatedUserData) error {
 		Name:     user.Username,
 		Password: user.Password,
 	}
-	return h.repo.Create(&userInfo)
+	return h.repo.CreateWithEmail(&userInfo)
 }
 
 func (h *AuthService) ParseToken(utoken string) (string, error) {
