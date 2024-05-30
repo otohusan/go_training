@@ -6,6 +6,7 @@ import (
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
+	"strings"
 	"sync"
 )
 
@@ -97,4 +98,17 @@ func (r *StudySetRepository) Delete(id string) error {
 
 	delete(r.studySets, id)
 	return nil
+}
+
+func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	var results []*model.StudySet
+	for _, studySet := range r.studySets {
+		if strings.Contains(strings.ToLower(studySet.Title), strings.ToLower(title)) {
+			results = append(results, studySet)
+		}
+	}
+	return results, nil
 }

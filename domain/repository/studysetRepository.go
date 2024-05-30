@@ -8,4 +8,5 @@ type StudySetRepository interface {
 	GetByUserID(userID string) ([]*model.StudySet, error)
 	Update(studySet *model.StudySet) error
 	Delete(id string) error
+	SearchByTitle(title string) ([]*model.StudySet, error)
 }

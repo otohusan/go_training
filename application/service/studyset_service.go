@@ -60,3 +60,7 @@ func (s *StudySetService) UpdateStudySet(studySet *model.StudySet) error {
 func (s *StudySetService) DeleteStudySet(id string) error {
 	return s.repo.Delete(id)
 }
+
+func (s *StudySetService) SearchStudySetsByTitle(title string) ([]*model.StudySet, error) {
+	return s.repo.SearchByTitle(title)
+}
