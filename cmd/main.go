@@ -3,6 +3,7 @@ package main
 import (
 	"go-training/application/service"
 	"go-training/handlers"
+	"go-training/middleware"
 
 	"github.com/gin-gonic/gin"
 
@@ -52,10 +53,16 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 		userRoutes.POST("/", userHandler.CreateUser)
 		userRoutes.GET("/:userID", userHandler.GetUserByID)
 		userRoutes.GET("/username/:username", userHandler.GetUserByUsername)
-		userRoutes.PUT("/:userID", userHandler.UpdateUser)
-		userRoutes.DELETE("/:userID", userHandler.DeleteUser)
+	}
+
+	// 認証が必要なユーザー関連のルート
+	authUserRoutes := router.Group("/users")
+	authUserRoutes.Use(middleware.AuthMiddleware())
+	{
+		authUserRoutes.PUT("/:userID", userHandler.UpdateUser)
+		authUserRoutes.DELETE("/:userID", userHandler.DeleteUser)
 		// favoriteHandlerをここで呼び出すのが気になるけど、エンドポイントがこっちの方が直感的
-		userRoutes.GET("/:userID/favorite", favoriteHandler.GetFavoriteStudySetsByUserID)
+		authUserRoutes.GET("/:userID/favorite", favoriteHandler.GetFavoriteStudySetsByUserID)
 	}
 
 	// 学習セット関連のルートをグループ化
