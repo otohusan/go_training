@@ -30,3 +30,7 @@ func (s *FavoriteService) GetFavoritesByUserID(userID string) ([]*model.Favorite
 func (s *FavoriteService) IsFavorite(userID, studySetID string) (bool, error) {
 	return s.favoriteRepo.IsFavorite(userID, studySetID)
 }
+
+func (s *FavoriteService) GetFavoriteStudySetsByUserID(userID string) ([]*model.StudySet, error) {
+	return s.favoriteRepo.GetFavoriteStudySetsByUserID(userID)
+}

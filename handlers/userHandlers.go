@@ -33,7 +33,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 }
 
 func (h *UserHandler) GetUserByID(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("userID")
 
 	user, err := h.userService.GetUserByID(id)
 	if err != nil {
@@ -63,7 +63,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
+	id := c.Param("userID")
 	user.ID = id
 
 	err := h.userService.UpdateUser(&user)
@@ -76,7 +76,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 }
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("userID")
 
 	err := h.userService.DeleteUser(id)
 	if err != nil {

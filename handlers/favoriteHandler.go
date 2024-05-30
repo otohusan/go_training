@@ -65,3 +65,15 @@ func (h *FavoriteHandler) IsFavorite(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"is_favorite": isFavorite})
 }
+
+func (h *FavoriteHandler) GetFavoriteStudySetsByUserID(c *gin.Context) {
+	userID := c.Param("userID")
+
+	studySets, err := h.favoriteService.GetFavoriteStudySetsByUserID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, studySets)
+}

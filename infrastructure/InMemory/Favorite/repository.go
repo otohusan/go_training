@@ -103,3 +103,21 @@ func (r *FavoriteRepository) IsFavorite(userID, studySetID string) (bool, error)
 	}
 	return false, nil
 }
+
+func (r *FavoriteRepository) GetFavoriteStudySetsByUserID(userID string) ([]*model.StudySet, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	var studySets []*model.StudySet
+	// 2重ループになっていて計算量は良くないけど、テストケースは多くないから問題ない
+	for _, favorite := range r.favorites {
+		if favorite.UserID == userID {
+			for _, studySet := range inmemory.InitializeStudySets() {
+				if studySet.ID == favorite.StudySetID {
+					studySets = append(studySets, studySet)
+				}
+			}
+		}
+	}
+	return studySets, nil
+}

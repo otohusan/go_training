@@ -7,4 +7,5 @@ type FavoriteRepository interface {
 	RemoveFavorite(userID, studySetID string) error
 	GetFavoritesByUserID(userID string) ([]*model.Favorite, error)
 	IsFavorite(userID, studySetID string) (bool, error)
+	GetFavoriteStudySetsByUserID(userID string) ([]*model.StudySet, error)
 }
