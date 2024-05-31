@@ -19,7 +19,15 @@ func (h *FavoriteHandler) AddFavorite(c *gin.Context) {
 	userID := c.Param("userID")
 	studySetID := c.Param("studySetID")
 
-	err := h.favoriteService.AddFavorite(userID, studySetID)
+	// middlewareで設定されたAuthUserIDの取得
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	// サービスを呼び出す
+	err := h.favoriteService.AddFavorite(AuthUserID.(string), userID, studySetID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -32,7 +40,14 @@ func (h *FavoriteHandler) RemoveFavorite(c *gin.Context) {
 	userID := c.Param("userID")
 	studySetID := c.Param("studySetID")
 
-	err := h.favoriteService.RemoveFavorite(userID, studySetID)
+	// middlewareで設定されたAuthUserIDの取得
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	err := h.favoriteService.RemoveFavorite(AuthUserID.(string), userID, studySetID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

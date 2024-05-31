@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 )
@@ -15,11 +16,19 @@ func NewFavoriteService(favoriteRepo repository.FavoriteRepository) *FavoriteSer
 	}
 }
 
-func (s *FavoriteService) AddFavorite(userID, studySetID string) error {
+func (s *FavoriteService) AddFavorite(authUserID, userID, studySetID string) error {
+	// 認可できるか
+	if authUserID != userID {
+		return errors.New("not authorized")
+	}
 	return s.favoriteRepo.AddFavorite(userID, studySetID)
 }
 
-func (s *FavoriteService) RemoveFavorite(userID, studySetID string) error {
+func (s *FavoriteService) RemoveFavorite(authUserID, userID, studySetID string) error {
+	// 認可できるか
+	if authUserID != userID {
+		return errors.New("not authorized")
+	}
 	return s.favoriteRepo.RemoveFavorite(userID, studySetID)
 }
 

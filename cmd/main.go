@@ -101,7 +101,7 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	}
 
 	// お気に入り関連のルート
-	favoriteRoutes := router.Group("favorite")
+	favoriteRoutes := router.Group("favorites")
 	{
 		favoriteRoutes.GET("/is_favorite", favoriteHandler.IsFavorite)
 	}

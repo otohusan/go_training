@@ -44,7 +44,7 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 		}
 	}
 	if !isStudySetExists {
-		return errors.New("flashCard doesn't exists")
+		return errors.New("studySet doesn't exists")
 	}
 
 	// 新しいIDをUUIDで生成
