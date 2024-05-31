@@ -76,23 +76,28 @@ func (r *StudySetRepository) Update(authUserID, studySetID string, studySet *mod
 	// パフォーマンスを考慮して
 	// 本番のクエリを1回にするためにリポジトリで認可行う
 
-	studySetFromDB, err := r.GetByID(studySetID)
-	if err != nil {
-		return err
+	var studySetFromDB *model.StudySet
+	var targetIndex int
+
+	for i, studySet := range inmemory.StudySets {
+		if studySet.ID == studySetID {
+			studySetFromDB = studySet
+			targetIndex = i
+		}
+	}
+
+	if studySetFromDB == nil {
+		return errors.New("study set not found")
 	}
 
 	if studySetFromDB.UserID != authUserID {
 		return errors.New("not authorized to update study set")
 	}
 
-	for i, studySetFromDB := range inmemory.StudySets {
-		if studySetFromDB.ID == studySet.ID {
-			inmemory.StudySets[i] = studySet
-			return nil
-		}
-	}
-
-	return errors.New("study set not found")
+	// 変更可能な場所のみを変更する
+	inmemory.StudySets[targetIndex].Title = studySet.Title
+	inmemory.StudySets[targetIndex].Description = studySet.Description
+	return nil
 
 }
 
@@ -102,23 +107,27 @@ func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
 	// パフォーマンスを考慮して
 	// 本番のクエリを1回にするためにリポジトリで認可行う
 
-	studySet, err := r.GetByID(studySetID)
-	if err != nil {
-		return err
+	var studySet *model.StudySet
+	var targetIndex int
+
+	for i, studySetFromDB := range inmemory.StudySets {
+		if studySetFromDB.ID == studySetID {
+			studySet = studySetFromDB
+			targetIndex = i
+		}
+	}
+
+	if studySet == nil {
+		return errors.New("study set not found")
 	}
 
 	if studySet.UserID != authUserID {
 		return errors.New("not authorized to delete study set")
 	}
 
-	for i, studySetFromDB := range inmemory.StudySets {
-		if studySetFromDB.ID == studySetID {
-			inmemory.StudySets = utils.RemoveElementFromSlice(inmemory.StudySets, i)
-			return nil
-		}
-	}
+	inmemory.StudySets = utils.RemoveElementFromSlice(inmemory.StudySets, targetIndex)
 
-	return errors.New("study set not found")
+	return nil
 
 }
 

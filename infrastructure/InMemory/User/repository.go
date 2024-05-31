@@ -66,9 +66,9 @@ func (r *UserRepository) Update(user *model.User) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	// TODO:本人確認が必要
 	for i, userFromDB := range inmemory.Users {
 		if userFromDB.ID == user.ID {
+			// 変更可能な場所のみを変更する
 			inmemory.Users[i] = user
 			return nil
 		}

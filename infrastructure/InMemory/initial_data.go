@@ -25,12 +25,13 @@ var Users = []*model.User{
 var StudySets = []*model.StudySet{
 	{
 		ID:          "1",
-		UserID:      "1",
+		UserID:      "a",
 		Title:       "Study Set 1",
 		Description: "Description 1",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	},
+
 	{
 		ID:          "2",
 		UserID:      "2",

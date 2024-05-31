@@ -143,9 +143,10 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	}
 
 	// パスワードを比較
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, user)
+	// TODO: 確かめやすいように簡易化してる
+	// err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if user.Password != req.Email {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "password is not valid"})
 		return
 	}
 

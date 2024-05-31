@@ -47,9 +47,8 @@ func (s *UserService) GetUserByUsername(username string) (*model.User, error) {
 }
 
 func (s *UserService) UpdateUser(authUserID string, user *model.User) error {
-	// passwordも更新されてしまう？ リクエストにパスワードを毎回入れなくてはいけない？
-	if err := validateUser(user); err != nil {
-		return err
+	if user.Name == "" {
+		return errors.New("username cannot be empty")
 	}
 
 	// 認可できるか
