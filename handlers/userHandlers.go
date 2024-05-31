@@ -129,6 +129,12 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 		return
 	}
 
+	// 必要な情報があるか
+	if req.Email == "" || req.Password == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "情報が足りません"})
+		return
+	}
+
 	// emailからユーザ情報を取得
 	user, err := h.userService.GetUserByEmail(req.Email)
 	if err != nil {
@@ -139,7 +145,6 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	// パスワードを比較
 	// TODO: 確かめやすいように簡易化してる
 	// err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
-	println(user.Password)
 	if user.Password != req.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "password is not valid"})
 		return
