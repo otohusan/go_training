@@ -13,18 +13,11 @@ import (
 )
 
 type StudySetRepository struct {
-	mu        sync.Mutex
-	studySets map[string]*model.StudySet
+	mu sync.Mutex
 }
 
 func NewStudySetRepository() repository.StudySetRepository {
-	repo := &StudySetRepository{
-		studySets: make(map[string]*model.StudySet),
-	}
-	for _, studySet := range inmemory.StudySets {
-		repo.studySets[studySet.ID] = studySet
-	}
-	return repo
+	return &StudySetRepository{}
 }
 
 func (r *StudySetRepository) Create(studySet *model.StudySet) error {

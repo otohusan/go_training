@@ -12,18 +12,11 @@ import (
 )
 
 type UserRepository struct {
-	mu    sync.Mutex
-	users map[string]*model.User
+	mu sync.Mutex
 }
 
 func NewUserRepository() repository.UserRepository {
-	repo := &UserRepository{
-		users: make(map[string]*model.User),
-	}
-	for _, user := range inmemory.Users {
-		repo.users[user.ID] = user
-	}
-	return repo
+	return &UserRepository{}
 }
 
 func (r *UserRepository) CreateWithEmail(user *model.User) error {

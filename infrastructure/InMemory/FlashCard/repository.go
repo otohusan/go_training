@@ -12,18 +12,11 @@ import (
 )
 
 type FlashcardRepository struct {
-	mu         sync.Mutex
-	flashcards map[string]*model.Flashcard
+	mu sync.Mutex
 }
 
 func NewFlashcardRepository() repository.FlashcardRepository {
-	repo := &FlashcardRepository{
-		flashcards: make(map[string]*model.Flashcard),
-	}
-	for _, flashcard := range inmemory.Flashcards {
-		repo.flashcards[flashcard.ID] = flashcard
-	}
-	return repo
+	return &FlashcardRepository{}
 }
 
 func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {

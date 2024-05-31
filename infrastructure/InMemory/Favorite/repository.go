@@ -13,20 +13,11 @@ import (
 )
 
 type FavoriteRepository struct {
-	mu        sync.Mutex
-	favorites map[string]*model.Favorite
+	mu sync.Mutex
 }
 
 func NewFavoriteRepository() repository.FavoriteRepository {
-	repo := &FavoriteRepository{
-		favorites: make(map[string]*model.Favorite),
-	}
-
-	for _, favorite := range inmemory.Favorites {
-		repo.favorites[favorite.ID] = favorite
-	}
-
-	return repo
+	return &FavoriteRepository{}
 }
 
 func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
