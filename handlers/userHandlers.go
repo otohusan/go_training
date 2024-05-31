@@ -3,10 +3,9 @@ package handlers
 import (
 	"go-training/application/service"
 	"go-training/domain/model"
+	"go-training/utils"
 	"net/http"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -44,12 +43,7 @@ func (h *UserHandler) CreateUserWithEmail(c *gin.Context) {
 	}
 
 	// JWTトークンの生成
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID": user.ID,
-		"exp":    time.Now().Add(time.Hour * 72).Unix(), // トークンの有効期限
-	})
-
-	tokenString, err := token.SignedString(mySigningKey)
+	tokenString, err := utils.GenerateToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
@@ -151,13 +145,8 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 		return
 	}
 
-	// トークンの発行
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID": user.ID,
-		"exp":    time.Now().Add(time.Hour * 72).Unix(),
-	})
-
-	tokenString, err := token.SignedString(mySigningKey)
+	// JWTトークンの生成
+	tokenString, err := utils.GenerateToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
