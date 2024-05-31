@@ -19,7 +19,7 @@ func NewFlashcardRepository() repository.FlashcardRepository {
 	repo := &FlashcardRepository{
 		flashcards: make(map[string]*model.Flashcard),
 	}
-	for _, flashcard := range inmemory.InitializeFlashcards() {
+	for _, flashcard := range inmemory.Flashcards {
 		repo.flashcards[flashcard.ID] = flashcard
 	}
 	return repo
@@ -31,7 +31,7 @@ func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {
 
 	// 外部キー制約
 	isStudySetExists := false
-	for _, studySet := range inmemory.InitializeStudySets() {
+	for _, studySet := range inmemory.StudySets {
 		if studySet.ID == flashcard.StudySetID {
 			isStudySetExists = true
 		}

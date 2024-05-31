@@ -21,7 +21,7 @@ func NewFavoriteRepository() repository.FavoriteRepository {
 		favorites: make(map[string]*model.Favorite),
 	}
 
-	for _, favorite := range inmemory.InitializeFavorites() {
+	for _, favorite := range inmemory.Favorites {
 		repo.favorites[favorite.ID] = favorite
 	}
 
@@ -34,7 +34,7 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 
 	// 外部キーのチェック: UserIDが存在するか
 	isUserExists := false
-	for _, user := range inmemory.InitializeUsers() {
+	for _, user := range inmemory.Users {
 		if user.ID == userID {
 			isUserExists = true
 			break
@@ -44,7 +44,7 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 		return errors.New("user doesn't exist")
 	}
 	isStudySetExists := false
-	for _, studySet := range inmemory.InitializeStudySets() {
+	for _, studySet := range inmemory.StudySets {
 		if studySet.ID == studySetID {
 			isStudySetExists = true
 			break
@@ -63,6 +63,7 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 		CreatedAt:  time.Now(),
 	}
 	r.favorites[newFavorite.ID] = newFavorite
+	inmemory.Favorites = append(inmemory.Favorites, newFavorite)
 	return nil
 }
 
@@ -112,7 +113,7 @@ func (r *FavoriteRepository) GetFavoriteStudySetsByUserID(userID string) ([]*mod
 	// 2重ループになっていて計算量は良くないけど、テストケースは多くないから問題ない
 	for _, favorite := range r.favorites {
 		if favorite.UserID == userID {
-			for _, studySet := range inmemory.InitializeStudySets() {
+			for _, studySet := range inmemory.StudySets {
 				if studySet.ID == favorite.StudySetID {
 					studySets = append(studySets, studySet)
 				}

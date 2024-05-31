@@ -63,8 +63,22 @@ func (h *StudySetHandler) UpdateStudySet(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
-	studySet.ID = id
+	userID := c.Param("userID")
+	studySetID := c.Param("studySetID")
+
+	// middlewareで設定されたAuthUserIDの取得
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+	// authIDとパラメータのIDが違ったら認可されない
+	if AuthUserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
+		return
+	}
+
+	studySet.ID = studySetID
 
 	err := h.studySetService.UpdateStudySet(&studySet)
 	if err != nil {
@@ -76,9 +90,22 @@ func (h *StudySetHandler) UpdateStudySet(c *gin.Context) {
 }
 
 func (h *StudySetHandler) DeleteStudySet(c *gin.Context) {
-	id := c.Param("id")
+	userID := c.Param("userID")
+	studySetID := c.Param("studySetID")
 
-	err := h.studySetService.DeleteStudySet(id)
+	// middlewareで設定されたAuthUserIDの取得
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+	// authIDとパラメータのuserIDが違ったら認可されない
+	if AuthUserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
+		return
+	}
+
+	err := h.studySetService.DeleteStudySet(studySetID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

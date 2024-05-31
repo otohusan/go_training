@@ -20,7 +20,7 @@ func NewStudySetRepository() repository.StudySetRepository {
 	repo := &StudySetRepository{
 		studySets: make(map[string]*model.StudySet),
 	}
-	for _, studySet := range inmemory.InitializeStudySets() {
+	for _, studySet := range inmemory.StudySets {
 		repo.studySets[studySet.ID] = studySet
 	}
 	return repo
@@ -32,7 +32,7 @@ func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 
 	// 外部キーのチェック: UserIDが存在するか
 	isUserExists := false
-	for _, user := range inmemory.InitializeUsers() {
+	for _, user := range inmemory.Users {
 		if user.ID == studySet.UserID {
 			isUserExists = true
 		}

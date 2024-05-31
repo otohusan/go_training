@@ -80,8 +80,8 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	authStudySetRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
 		authStudySetRoutes.POST("/", studySetHandler.CreateStudySet)
-		authStudySetRoutes.PUT("/:id", studySetHandler.UpdateStudySet)
-		authStudySetRoutes.DELETE("/:id", studySetHandler.DeleteStudySet)
+		authStudySetRoutes.PUT("/:userID/:studySetID", studySetHandler.UpdateStudySet)
+		authStudySetRoutes.DELETE("/:userID/:studySetID", studySetHandler.DeleteStudySet)
 	}
 
 	// フラッシュカード関連のルートをグループ化

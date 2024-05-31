@@ -19,7 +19,7 @@ func NewUserRepository() repository.UserRepository {
 	repo := &UserRepository{
 		users: make(map[string]*model.User),
 	}
-	for _, user := range inmemory.InitializeUsers() {
+	for _, user := range inmemory.Users {
 		repo.users[user.ID] = user
 	}
 	return repo
@@ -43,6 +43,7 @@ func (r *UserRepository) CreateWithEmail(user *model.User) error {
 	}
 
 	r.users[user.ID] = user
+	inmemory.Users = append(inmemory.Users, user)
 	return nil
 }
 
