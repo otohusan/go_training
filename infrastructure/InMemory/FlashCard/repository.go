@@ -5,6 +5,7 @@ import (
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
+	"go-training/utils"
 	"sync"
 
 	"github.com/google/uuid"
@@ -28,6 +29,7 @@ func NewFlashcardRepository() repository.FlashcardRepository {
 func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
 	// 外部キー制約
 	isStudySetExists := false
@@ -43,11 +45,6 @@ func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {
 	// uuid作成
 	flashcard.ID = uuid.New().String()
 
-	if _, exists := r.flashcards[flashcard.ID]; exists {
-		return errors.New("flashcard already exists")
-	}
-
-	r.flashcards[flashcard.ID] = flashcard
 	return nil
 }
 
@@ -55,12 +52,14 @@ func (r *FlashcardRepository) GetByID(id string) (*model.Flashcard, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	flashcard, exists := r.flashcards[id]
-	if !exists {
-		return nil, errors.New("flashcard not found")
+	for _, flashcard := range inmemory.Flashcards {
+		if flashcard.ID == id {
+			return flashcard, nil
+		}
 	}
 
-	return flashcard, nil
+	return nil, errors.New("flashcard not found")
+
 }
 
 func (r *FlashcardRepository) GetByStudySetID(studySetID string) ([]*model.Flashcard, error) {
@@ -68,7 +67,7 @@ func (r *FlashcardRepository) GetByStudySetID(studySetID string) ([]*model.Flash
 	defer r.mu.Unlock()
 
 	var studySetFlashcards []*model.Flashcard
-	for _, flashcard := range r.flashcards {
+	for _, flashcard := range inmemory.Flashcards {
 		if flashcard.StudySetID == studySetID {
 			studySetFlashcards = append(studySetFlashcards, flashcard)
 		}
@@ -79,23 +78,30 @@ func (r *FlashcardRepository) GetByStudySetID(studySetID string) ([]*model.Flash
 func (r *FlashcardRepository) Update(flashcard *model.Flashcard) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
-	if _, exists := r.flashcards[flashcard.ID]; !exists {
-		return errors.New("flashcard not found")
+	for i, flashcardFromDB := range inmemory.Flashcards {
+		if flashcardFromDB.ID == flashcard.ID {
+			inmemory.Flashcards[i] = flashcard
+			return nil
+		}
 	}
 
-	r.flashcards[flashcard.ID] = flashcard
-	return nil
+	return errors.New("flashcard not found")
+
 }
 
 func (r *FlashcardRepository) Delete(id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
-	if _, exists := r.flashcards[id]; !exists {
-		return errors.New("flashcard not found")
+	for i, flashcardFromDB := range inmemory.Flashcards {
+		if flashcardFromDB.ID == id {
+			inmemory.Flashcards = utils.RemoveElementFromSlice(inmemory.Flashcards, i)
+			return nil
+		}
 	}
 
-	delete(r.flashcards, id)
-	return nil
+	return errors.New("flashcard not found")
 }
