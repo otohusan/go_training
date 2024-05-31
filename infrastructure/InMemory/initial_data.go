@@ -1,4 +1,4 @@
-package inmemory
+package dataHub
 
 import (
 	"go-training/domain/model"
