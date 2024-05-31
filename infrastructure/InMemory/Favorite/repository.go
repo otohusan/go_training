@@ -5,6 +5,7 @@ import (
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
+	"go-training/utils"
 	"sync"
 	"time"
 
@@ -31,6 +32,7 @@ func NewFavoriteRepository() repository.FavoriteRepository {
 func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
 	// 外部キーのチェック: UserIDが存在するか
 	isUserExists := false
@@ -62,7 +64,6 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 		StudySetID: studySetID,
 		CreatedAt:  time.Now(),
 	}
-	r.favorites[newFavorite.ID] = newFavorite
 	inmemory.Favorites = append(inmemory.Favorites, newFavorite)
 	return nil
 }
@@ -70,10 +71,11 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 func (r *FavoriteRepository) RemoveFavorite(userID, studySetID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
-	for id, favorite := range r.favorites {
+	for i, favorite := range inmemory.Favorites {
 		if favorite.UserID == userID && favorite.StudySetID == studySetID {
-			delete(r.favorites, id)
+			inmemory.Favorites = utils.RemoveElementFromSlice(inmemory.Favorites, i)
 			return nil
 		}
 	}
@@ -85,7 +87,7 @@ func (r *FavoriteRepository) GetFavoritesByUserID(userID string) ([]*model.Favor
 	defer r.mu.Unlock()
 
 	var userFavorites []*model.Favorite
-	for _, favorite := range r.favorites {
+	for _, favorite := range inmemory.Favorites {
 		if favorite.UserID == userID {
 			userFavorites = append(userFavorites, favorite)
 		}
@@ -97,7 +99,7 @@ func (r *FavoriteRepository) IsFavorite(userID, studySetID string) (bool, error)
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	for _, favorite := range r.favorites {
+	for _, favorite := range inmemory.Favorites {
 		if favorite.UserID == userID && favorite.StudySetID == studySetID {
 			return true, nil
 		}
@@ -111,7 +113,7 @@ func (r *FavoriteRepository) GetFavoriteStudySetsByUserID(userID string) ([]*mod
 
 	var studySets []*model.StudySet
 	// 2重ループになっていて計算量は良くないけど、テストケースは多くないから問題ない
-	for _, favorite := range r.favorites {
+	for _, favorite := range inmemory.Favorites {
 		if favorite.UserID == userID {
 			for _, studySet := range inmemory.StudySets {
 				if studySet.ID == favorite.StudySetID {
