@@ -52,8 +52,11 @@ func (s *StudySetService) GetStudySetsByUserID(userID string) ([]*model.StudySet
 }
 
 func (s *StudySetService) UpdateStudySet(authUserID, studySetID string, studySet *model.StudySet) error {
-	if err := validateStudySet(studySet); err != nil {
-		return err
+	if studySet.Title == "" {
+		return errors.New("title cannot be empty")
+	}
+	if studySet.Description == "" {
+		return errors.New("description cannot be empty")
 	}
 
 	// パフォーマンスを考慮してリポジトリに認可を移譲

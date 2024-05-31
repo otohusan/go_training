@@ -30,12 +30,12 @@ func NewFlashcardService(repo repository.FlashcardRepository) *FlashcardService 
 	}
 }
 
-func (s *FlashcardService) CreateFlashcard(flashcard *model.Flashcard) error {
+func (s *FlashcardService) CreateFlashcard(authUserID string, flashcard *model.Flashcard) error {
 	if err := validateFlashCard(flashcard); err != nil {
 		return err
 	}
 
-	return s.repo.Create(flashcard)
+	return s.repo.Create(authUserID, flashcard)
 }
 
 func (s *FlashcardService) GetFlashcardByID(id string) (*model.Flashcard, error) {
@@ -46,14 +46,14 @@ func (s *FlashcardService) GetFlashcardsByStudySetID(studySetID string) ([]*mode
 	return s.repo.GetByStudySetID(studySetID)
 }
 
-func (s *FlashcardService) UpdateFlashcard(flashcard *model.Flashcard) error {
+func (s *FlashcardService) UpdateFlashcard(authUSerID string, flashcard *model.Flashcard) error {
 	if err := validateFlashCard(flashcard); err != nil {
 		return err
 	}
 
-	return s.repo.Update(flashcard)
+	return s.repo.Update(authUSerID, flashcard)
 }
 
-func (s *FlashcardService) DeleteFlashcard(id string) error {
-	return s.repo.Delete(id)
+func (s *FlashcardService) DeleteFlashcard(authUSerID, studySetID, flashcardID string) error {
+	return s.repo.Delete(authUSerID, studySetID, flashcardID)
 }

@@ -19,25 +19,33 @@ func NewFlashcardRepository() repository.FlashcardRepository {
 	return &FlashcardRepository{}
 }
 
-func (r *FlashcardRepository) Create(flashcard *model.Flashcard) error {
+func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashcard) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	// TODO:本人確認が必要
+	// パフォーマンスを考慮して
+	// 本番のクエリを1回にするためにリポジトリで認可行う
+
+	var studySet *model.StudySet
 
 	// 外部キー制約
-	isStudySetExists := false
-	for _, studySet := range inmemory.StudySets {
-		if studySet.ID == flashcard.StudySetID {
-			isStudySetExists = true
+	for _, s := range inmemory.StudySets {
+		if s.ID == flashcard.StudySetID {
+			studySet = s
 		}
 	}
-	if !isStudySetExists {
-		return errors.New("flashCard doesn't exists")
+	if studySet == nil {
+		return errors.New("studySet doesn't exists")
+	}
+
+	// 認可できるか
+	if studySet.UserID != authUserID {
+		return errors.New("not authorized to update flashcard")
 	}
 
 	// uuid作成
 	flashcard.ID = uuid.New().String()
 
+	inmemory.Flashcards = append(inmemory.Flashcards, flashcard)
 	return nil
 }
 
@@ -68,14 +76,33 @@ func (r *FlashcardRepository) GetByStudySetID(studySetID string) ([]*model.Flash
 	return studySetFlashcards, nil
 }
 
-func (r *FlashcardRepository) Update(flashcard *model.Flashcard) error {
+func (r *FlashcardRepository) Update(authUserID string, flashcard *model.Flashcard) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	// TODO:本人確認が必要
+	// パフォーマンスを考慮して
+	// 本番のクエリを1回にするためにリポジトリで認可行う
 
-	for i, flashcardFromDB := range inmemory.Flashcards {
-		if flashcardFromDB.ID == flashcard.ID {
-			inmemory.Flashcards[i] = flashcard
+	var studySet *model.StudySet
+
+	// 学習セットのオーナーを調べる
+	for _, s := range inmemory.StudySets {
+		if s.ID == flashcard.StudySetID {
+			studySet = s
+		}
+	}
+	if studySet == nil {
+		return errors.New("studySet doesn't exists")
+	}
+
+	// 認可できるか
+	if studySet.UserID != authUserID {
+		return errors.New("not authorized to update flashcard")
+	}
+
+	for i, f := range inmemory.Flashcards {
+		if f.ID == flashcard.ID {
+			inmemory.Flashcards[i].Question = flashcard.Question
+			inmemory.Flashcards[i].Answer = flashcard.Answer
 			return nil
 		}
 	}
@@ -84,13 +111,32 @@ func (r *FlashcardRepository) Update(flashcard *model.Flashcard) error {
 
 }
 
-func (r *FlashcardRepository) Delete(id string) error {
+func (r *FlashcardRepository) Delete(authUserID, studySetID, flashcardID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	// TODO:本人確認が必要
+	// パフォーマンスを考慮して
+	// 本番のクエリを1回にするためにリポジトリで認可行う
 
+	var studySet *model.StudySet
+
+	// 学習セットのオーナーを調べる
+	for _, s := range inmemory.StudySets {
+		if s.ID == studySetID {
+			studySet = s
+		}
+	}
+	if studySet == nil {
+		return errors.New("studySet doesn't exists")
+	}
+
+	// 認可できるか
+	if studySet.UserID != authUserID {
+		return errors.New("not authorized to update flashcard")
+	}
+
+	// 削除
 	for i, flashcardFromDB := range inmemory.Flashcards {
-		if flashcardFromDB.ID == id {
+		if flashcardFromDB.ID == flashcardID {
 			inmemory.Flashcards = utils.RemoveElementFromSlice(inmemory.Flashcards, i)
 			return nil
 		}

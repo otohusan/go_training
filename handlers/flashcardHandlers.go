@@ -27,26 +27,14 @@ func (h *FlashcardHandler) CreateFlashcard(c *gin.Context) {
 
 	// ユーザが適切か確認する手順
 	studySetID := c.Param("studySetID")
+	flashcard.StudySetID = studySetID
 	AuthUserID, exists := c.Get("AuthUserID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
 		return
 	}
 
-	// studySetのサービスをここで読んでいいのかは疑問だけど使ってる,良い方法他にあればいいな
-	studySet, err := h.studySetService.GetStudySetByID(studySetID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "studySet doesn't exist"})
-		return
-	}
-
-	// 認可できるか
-	if studySet.UserID != AuthUserID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
-
-	if err := h.flashcardService.CreateFlashcard(&flashcard); err != nil {
+	if err := h.flashcardService.CreateFlashcard(AuthUserID.(string), &flashcard); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -87,29 +75,18 @@ func (h *FlashcardHandler) UpdateFlashcard(c *gin.Context) {
 
 	// flashcardの作成者を確かめるために色々取り出す
 	flashcardID := c.Param("flashcardID")
+	flashcard.ID = flashcardID
 	studySetID := c.Param("studySetID")
+	flashcard.StudySetID = studySetID
+	// 認証IDを取り出す
 	AuthUserID, exists := c.Get("AuthUserID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
 		return
 	}
 
-	// studySetのサービスをここで読んでいいのかは疑問だけど使ってる,良い方法他にあればいいな
-	studySet, err := h.studySetService.GetStudySetByID(studySetID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "studySet doesn't exist"})
-		return
-	}
-
-	// 認可できるか
-	if studySet.UserID != AuthUserID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
-
-	flashcard.ID = flashcardID
-
-	if err := h.flashcardService.UpdateFlashcard(&flashcard); err != nil {
+	// サービス呼び出し
+	if err := h.flashcardService.UpdateFlashcard(AuthUserID.(string), &flashcard); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -118,9 +95,17 @@ func (h *FlashcardHandler) UpdateFlashcard(c *gin.Context) {
 }
 
 func (h *FlashcardHandler) DeleteFlashcard(c *gin.Context) {
-	id := c.Param("id")
+	flashcardID := c.Param("flashcardID")
+	studySetID := c.Param("studySetID")
 
-	err := h.flashcardService.DeleteFlashcard(id)
+	// 認証IDを取り出す
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	err := h.flashcardService.DeleteFlashcard(AuthUserID.(string), studySetID, flashcardID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
