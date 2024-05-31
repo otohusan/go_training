@@ -23,7 +23,6 @@ func NewStudySetRepository() repository.StudySetRepository {
 func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	// TODO:本人確認が必要
 
 	// 外部キーのチェック: UserIDが存在するか
 	isUserExists := false
@@ -71,11 +70,21 @@ func (r *StudySetRepository) GetByUserID(userID string) ([]*model.StudySet, erro
 	return userStudySets, nil
 }
 
-func (r *StudySetRepository) Update(studySet *model.StudySet) error {
+func (r *StudySetRepository) Update(authUserID, studySetID string, studySet *model.StudySet) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// パフォーマンスを考慮して
+	// 本番のクエリを1回にするためにリポジトリで認可行う
 
-	// TODO:本人確認が必要
+	studySetFromDB, err := r.GetByID(studySetID)
+	if err != nil {
+		return err
+	}
+
+	if studySetFromDB.UserID != authUserID {
+		return errors.New("not authorized to update study set")
+	}
+
 	for i, studySetFromDB := range inmemory.StudySets {
 		if studySetFromDB.ID == studySet.ID {
 			inmemory.StudySets[i] = studySet
@@ -87,13 +96,23 @@ func (r *StudySetRepository) Update(studySet *model.StudySet) error {
 
 }
 
-func (r *StudySetRepository) Delete(id string) error {
+func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	// TODO:本人確認が必要
+	// パフォーマンスを考慮して
+	// 本番のクエリを1回にするためにリポジトリで認可行う
+
+	studySet, err := r.GetByID(studySetID)
+	if err != nil {
+		return err
+	}
+
+	if studySet.UserID != authUserID {
+		return errors.New("not authorized to delete study set")
+	}
 
 	for i, studySetFromDB := range inmemory.StudySets {
-		if studySetFromDB.ID == id {
+		if studySetFromDB.ID == studySetID {
 			inmemory.StudySets = utils.RemoveElementFromSlice(inmemory.StudySets, i)
 			return nil
 		}

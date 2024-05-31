@@ -7,10 +7,10 @@ import (
 
 var Users = []*model.User{
 	{
-		ID:        "1",
-		Name:      "user1",
-		Password:  "password1",
-		Email:     "sasasa",
+		ID:        "a",
+		Name:      "a",
+		Password:  "a",
+		Email:     "a",
 		CreatedAt: time.Now(),
 	},
 	{

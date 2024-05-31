@@ -29,13 +29,7 @@ func (h *StudySetHandler) CreateStudySet(c *gin.Context) {
 		return
 	}
 
-	// 認可できるか
-	if studySet.UserID != AuthUserID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
-
-	err := h.studySetService.CreateStudySet(&studySet)
+	err := h.studySetService.CreateStudySet(AuthUserID.(string), &studySet)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -75,8 +69,8 @@ func (h *StudySetHandler) UpdateStudySet(c *gin.Context) {
 		return
 	}
 
-	userID := c.Param("userID")
 	studySetID := c.Param("studySetID")
+	studySet.ID = studySetID
 
 	// middlewareで設定されたAuthUserIDの取得
 	AuthUserID, exists := c.Get("AuthUserID")
@@ -84,15 +78,8 @@ func (h *StudySetHandler) UpdateStudySet(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
 		return
 	}
-	// authIDとパラメータのIDが違ったら認可されない
-	if AuthUserID != userID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
 
-	studySet.ID = studySetID
-
-	err := h.studySetService.UpdateStudySet(&studySet)
+	err := h.studySetService.UpdateStudySet(AuthUserID.(string), studySetID, &studySet)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -102,7 +89,6 @@ func (h *StudySetHandler) UpdateStudySet(c *gin.Context) {
 }
 
 func (h *StudySetHandler) DeleteStudySet(c *gin.Context) {
-	userID := c.Param("userID")
 	studySetID := c.Param("studySetID")
 
 	// middlewareで設定されたAuthUserIDの取得
@@ -111,13 +97,8 @@ func (h *StudySetHandler) DeleteStudySet(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
 		return
 	}
-	// authIDとパラメータのuserIDが違ったら認可されない
-	if AuthUserID != userID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
 
-	err := h.studySetService.DeleteStudySet(studySetID)
+	err := h.studySetService.DeleteStudySet(AuthUserID.(string), studySetID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

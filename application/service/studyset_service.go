@@ -31,9 +31,13 @@ func NewStudySetService(repo repository.StudySetRepository) *StudySetService {
 	}
 }
 
-func (s *StudySetService) CreateStudySet(studySet *model.StudySet) error {
+func (s *StudySetService) CreateStudySet(authUserID string, studySet *model.StudySet) error {
 	if err := validateStudySet(studySet); err != nil {
 		return err
+	}
+
+	if authUserID != studySet.UserID {
+		return errors.New("not authorized to create study set")
 	}
 
 	return s.repo.Create(studySet)
@@ -47,16 +51,18 @@ func (s *StudySetService) GetStudySetsByUserID(userID string) ([]*model.StudySet
 	return s.repo.GetByUserID(userID)
 }
 
-func (s *StudySetService) UpdateStudySet(studySet *model.StudySet) error {
+func (s *StudySetService) UpdateStudySet(authUserID, studySetID string, studySet *model.StudySet) error {
 	if err := validateStudySet(studySet); err != nil {
 		return err
 	}
 
-	return s.repo.Update(studySet)
+	// パフォーマンスを考慮してリポジトリに認可を移譲
+	return s.repo.Update(authUserID, studySetID, studySet)
 }
 
-func (s *StudySetService) DeleteStudySet(id string) error {
-	return s.repo.Delete(id)
+func (s *StudySetService) DeleteStudySet(authUserID, studySetID string) error {
+	// パフォーマンスを考慮してリポジトリに認可を移譲
+	return s.repo.Delete(authUserID, studySetID)
 }
 
 func (s *StudySetService) SearchStudySetsByTitle(title string) ([]*model.StudySet, error) {

@@ -97,15 +97,10 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
 		return
 	}
-	// authIDとパラメータのIDが違ったら認可されない
-	if AuthUserID != id {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
 
 	user.ID = id
 
-	err := h.userService.UpdateUser(&user)
+	err := h.userService.UpdateUser(AuthUserID.(string), &user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -124,13 +119,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	// authIDとパラメータのIDが違ったら認可されない
-	if AuthUserID != id {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
-
-	err := h.userService.DeleteUser(id)
+	err := h.userService.DeleteUser(AuthUserID.(string), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

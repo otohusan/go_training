@@ -46,15 +46,26 @@ func (s *UserService) GetUserByUsername(username string) (*model.User, error) {
 	return s.repo.GetByUsername(username)
 }
 
-func (s *UserService) UpdateUser(user *model.User) error {
+func (s *UserService) UpdateUser(authUserID string, user *model.User) error {
+	// passwordも更新されてしまう？ リクエストにパスワードを毎回入れなくてはいけない？
 	if err := validateUser(user); err != nil {
 		return err
+	}
+
+	// 認可できるか
+	if user.ID != authUserID {
+		return errors.New("not authorized")
 	}
 
 	return s.repo.Update(user)
 }
 
-func (s *UserService) DeleteUser(id string) error {
+func (s *UserService) DeleteUser(authUserID string, id string) error {
+	// 認可できるか
+	if id != authUserID {
+		return errors.New("not authorized")
+	}
+
 	return s.repo.Delete(id)
 }
 
