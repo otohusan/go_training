@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	// userRepo "go-training/infrastructure/rest"
+	favorite "go-training/infrastructure/InMemory/Favorite"
 	flashcard "go-training/infrastructure/InMemory/FlashCard"
 	studySet "go-training/infrastructure/InMemory/StudySet"
 	user "go-training/infrastructure/InMemory/User"
-	favorite "go-training/infrastructure/inmemory/Favorite"
 )
 
 func main() {
