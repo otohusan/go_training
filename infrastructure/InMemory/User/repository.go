@@ -69,7 +69,7 @@ func (r *UserRepository) Update(user *model.User) error {
 	for i, userFromDB := range inmemory.Users {
 		if userFromDB.ID == user.ID {
 			// 変更可能な場所のみを変更する
-			inmemory.Users[i] = user
+			inmemory.Users[i].Name = user.Name
 			return nil
 		}
 	}
