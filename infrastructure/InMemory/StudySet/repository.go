@@ -5,6 +5,7 @@ import (
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	inmemory "go-training/infrastructure/InMemory"
+	"go-training/utils"
 	"strings"
 	"sync"
 
@@ -29,6 +30,7 @@ func NewStudySetRepository() repository.StudySetRepository {
 func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
 	// 外部キーのチェック: UserIDが存在するか
 	isUserExists := false
@@ -44,11 +46,6 @@ func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 	// uuid作成
 	studySet.ID = uuid.New().String()
 
-	if _, exists := r.studySets[studySet.ID]; exists {
-		return errors.New("study set already exists")
-	}
-
-	r.studySets[studySet.ID] = studySet
 	inmemory.StudySets = append(inmemory.StudySets, studySet)
 	return nil
 }
@@ -57,12 +54,13 @@ func (r *StudySetRepository) GetByID(id string) (*model.StudySet, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	studySet, exists := r.studySets[id]
-	if !exists {
-		return nil, errors.New("study set not found")
+	for _, studySet := range inmemory.StudySets {
+		if studySet.ID == id {
+			return studySet, nil
+		}
 	}
 
-	return studySet, nil
+	return nil, errors.New("study set not found")
 }
 
 func (r *StudySetRepository) GetByUserID(userID string) ([]*model.StudySet, error) {
@@ -70,11 +68,13 @@ func (r *StudySetRepository) GetByUserID(userID string) ([]*model.StudySet, erro
 	defer r.mu.Unlock()
 
 	var userStudySets []*model.StudySet
-	for _, studySet := range r.studySets {
+
+	for _, studySet := range inmemory.StudySets {
 		if studySet.UserID == userID {
 			userStudySets = append(userStudySets, studySet)
 		}
 	}
+
 	return userStudySets, nil
 }
 
@@ -82,24 +82,32 @@ func (r *StudySetRepository) Update(studySet *model.StudySet) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if _, exists := r.studySets[studySet.ID]; !exists {
-		return errors.New("study set not found")
+	// TODO:本人確認が必要
+	for i, studySetFromDB := range inmemory.StudySets {
+		if studySetFromDB.ID == studySet.ID {
+			inmemory.StudySets[i] = studySet
+			return nil
+		}
 	}
 
-	r.studySets[studySet.ID] = studySet
-	return nil
+	return errors.New("study set not found")
+
 }
 
 func (r *StudySetRepository) Delete(id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
-	if _, exists := r.studySets[id]; !exists {
-		return errors.New("study set not found")
+	for i, studySetFromDB := range inmemory.StudySets {
+		if studySetFromDB.ID == id {
+			inmemory.StudySets = utils.RemoveElementFromSlice(inmemory.StudySets, i)
+			return nil
+		}
 	}
 
-	delete(r.studySets, id)
-	return nil
+	return errors.New("study set not found")
+
 }
 
 func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, error) {
@@ -107,7 +115,7 @@ func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, err
 	defer r.mu.Unlock()
 
 	var results []*model.StudySet
-	for _, studySet := range r.studySets {
+	for _, studySet := range inmemory.StudySets {
 		if strings.Contains(strings.ToLower(studySet.Title), strings.ToLower(title)) {
 			results = append(results, studySet)
 		}

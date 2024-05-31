@@ -73,8 +73,9 @@ func (r *UserRepository) Update(user *model.User) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	for i, userSet := range inmemory.Users {
-		if userSet.ID == user.ID {
+	// TODO:本人確認が必要
+	for i, userFromDB := range inmemory.Users {
+		if userFromDB.ID == user.ID {
 			inmemory.Users[i] = user
 			return nil
 		}
@@ -87,6 +88,7 @@ func (r *UserRepository) Update(user *model.User) error {
 func (r *UserRepository) Delete(id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// TODO:本人確認が必要
 
 	for i, userSet := range inmemory.Users {
 		if userSet.ID == id {
