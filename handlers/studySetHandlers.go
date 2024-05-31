@@ -23,6 +23,18 @@ func (h *StudySetHandler) CreateStudySet(c *gin.Context) {
 		return
 	}
 
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	// 認可できるか
+	if studySet.UserID != AuthUserID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
+		return
+	}
+
 	err := h.studySetService.CreateStudySet(&studySet)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

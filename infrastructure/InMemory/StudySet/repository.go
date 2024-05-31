@@ -49,6 +49,7 @@ func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 	}
 
 	r.studySets[studySet.ID] = studySet
+	inmemory.StudySets = append(inmemory.StudySets, studySet)
 	return nil
 }
 

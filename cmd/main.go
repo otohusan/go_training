@@ -31,7 +31,7 @@ func main() {
 	// ハンドラーの初期化
 	userHandler := handlers.NewUserHandler(userService)
 	studySetHandler := handlers.NewStudySetHandler(studySetService)
-	flashcardHandler := handlers.NewFlashcardHandler(flashcardService)
+	flashcardHandler := handlers.NewFlashcardHandler(flashcardService, studySetService)
 	favoriteHandler := handlers.NewFavoriteHandler(favoriteService)
 
 	// Ginのルーターを設定
@@ -80,8 +80,8 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	authStudySetRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
 		authStudySetRoutes.POST("/", studySetHandler.CreateStudySet)
-		authStudySetRoutes.PUT("/:userID/:studySetID", studySetHandler.UpdateStudySet)
-		authStudySetRoutes.DELETE("/:userID/:studySetID", studySetHandler.DeleteStudySet)
+		authStudySetRoutes.PUT("/:studySetID", studySetHandler.UpdateStudySet)
+		authStudySetRoutes.DELETE("/:studySetID", studySetHandler.DeleteStudySet)
 	}
 
 	// フラッシュカード関連のルートをグループ化
@@ -95,9 +95,9 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	authFlashcardRoutes := router.Group("/flashcards")
 	authFlashcardRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
-		authFlashcardRoutes.POST("/", flashcardHandler.CreateFlashcard)
-		authFlashcardRoutes.PUT("/:id", flashcardHandler.UpdateFlashcard)
-		authFlashcardRoutes.DELETE("/:id", flashcardHandler.DeleteFlashcard)
+		authFlashcardRoutes.POST("/:studySetID", flashcardHandler.CreateFlashcard)
+		authFlashcardRoutes.PUT("/:flashcardID/:studySetID", flashcardHandler.UpdateFlashcard)
+		authFlashcardRoutes.DELETE("/:flashcardID/:studySetID", flashcardHandler.DeleteFlashcard)
 	}
 
 	// お気に入り関連のルート

@@ -10,10 +10,12 @@ import (
 
 type FlashcardHandler struct {
 	flashcardService *service.FlashcardService
+	// studySetのサービスをここで読んでいいのかは疑問だけど
+	studySetService *service.StudySetService
 }
 
-func NewFlashcardHandler(flashcardService *service.FlashcardService) *FlashcardHandler {
-	return &FlashcardHandler{flashcardService: flashcardService}
+func NewFlashcardHandler(flashcardService *service.FlashcardService, studySetService *service.StudySetService) *FlashcardHandler {
+	return &FlashcardHandler{flashcardService: flashcardService, studySetService: studySetService}
 }
 
 func (h *FlashcardHandler) CreateFlashcard(c *gin.Context) {
@@ -23,8 +25,28 @@ func (h *FlashcardHandler) CreateFlashcard(c *gin.Context) {
 		return
 	}
 
-	err := h.flashcardService.CreateFlashcard(&flashcard)
+	// ユーザが適切か確認する手順
+	studySetID := c.Param("studySetID")
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	// studySetのサービスをここで読んでいいのかは疑問だけど使ってる,良い方法他にあればいいな
+	studySet, err := h.studySetService.GetStudySetByID(studySetID)
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "studySet doesn't exist"})
+		return
+	}
+
+	// 認可できるか
+	if studySet.UserID != AuthUserID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
+		return
+	}
+
+	if err := h.flashcardService.CreateFlashcard(&flashcard); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,11 +85,31 @@ func (h *FlashcardHandler) UpdateFlashcard(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
-	flashcard.ID = id
+	// flashcardの作成者を確かめるために色々取り出す
+	flashcardID := c.Param("flashcardID")
+	studySetID := c.Param("studySetID")
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
 
-	err := h.flashcardService.UpdateFlashcard(&flashcard)
+	// studySetのサービスをここで読んでいいのかは疑問だけど使ってる,良い方法他にあればいいな
+	studySet, err := h.studySetService.GetStudySetByID(studySetID)
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "studySet doesn't exist"})
+		return
+	}
+
+	// 認可できるか
+	if studySet.UserID != AuthUserID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
+		return
+	}
+
+	flashcard.ID = flashcardID
+
+	if err := h.flashcardService.UpdateFlashcard(&flashcard); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

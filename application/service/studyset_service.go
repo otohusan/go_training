@@ -12,7 +12,7 @@ func validateStudySet(studySet *model.StudySet) error {
 		return errors.New("title cannot be empty")
 	}
 	if studySet.Description == "" {
-		return errors.New("password cannot be empty")
+		return errors.New("description cannot be empty")
 	}
 	// userIDはJWTから取得するようにするか悩み中
 	if studySet.UserID == "" {
