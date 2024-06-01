@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 )
@@ -15,6 +16,7 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 }
 
 func (r *UserRepository) CreateWithEmail(user *model.User) error {
+	// idとcreatedAtは自動で生成される
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
 	_, err := r.db.Exec(query, user.Name, user.Password, user.Email)
 	if err != nil {
@@ -24,7 +26,17 @@ func (r *UserRepository) CreateWithEmail(user *model.User) error {
 }
 
 func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
-	return &model.UserResponse{}, nil
+	query := `SELECT id, username, email, created_at FROM users WHERE id = $1`
+	row := r.db.QueryRow(query, id)
+	user := &model.UserResponse{}
+	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return user, nil
 }
 
 func (r *UserRepository) GetByUsername(username string) (*model.UserResponse, error) {
