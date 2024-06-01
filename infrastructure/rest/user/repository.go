@@ -57,6 +57,11 @@ func (r *UserRepository) Update(user *model.User) error {
 }
 
 func (r *UserRepository) Delete(id string) error {
+	query := `DELETE FROM users WHERE id = $1`
+	_, err := r.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
