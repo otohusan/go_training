@@ -47,7 +47,21 @@ func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashca
 }
 
 func (r *FlashcardRepository) GetByID(id string) (*model.Flashcard, error) {
-	return nil, nil
+	query := `SELECT id, study_set_id, question, answer
+			  FROM flashcards
+			  WHERE id = $1`
+	row := r.db.QueryRow(query, id)
+
+	flashcard := &model.Flashcard{}
+
+	err := row.Scan(&flashcard.ID, &flashcard.StudySetID, &flashcard.Question, &flashcard.Answer)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("flashcard not found")
+		}
+		return nil, err
+	}
+	return flashcard, nil
 }
 
 func (r *FlashcardRepository) GetByStudySetID(studySetID string) ([]*model.Flashcard, error) {
