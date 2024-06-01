@@ -14,11 +14,12 @@ import (
 	_ "github.com/lib/pq"
 
 	favorite "go-training/infrastructure/InMemory/Favorite"
-	flashcard "go-training/infrastructure/InMemory/FlashCard"
+	flashcard "go-training/infrastructure/rest/flashCard"
 	"go-training/infrastructure/rest/studyset"
 	"go-training/infrastructure/rest/user"
 	// user "go-training/infrastructure/InMemory/User"
 	// studyset "go-training/infrastructure/InMemory/StudySet"
+	// flashcard "go-training/infrastructure/InMemory/FlashCard"
 )
 
 func main() {
@@ -49,7 +50,7 @@ func main() {
 	// リポジトリの初期化
 	userRepo := user.NewUserRepository(db)
 	studySetRepo := studyset.NewStudySetRepository(db)
-	flashcardRepo := flashcard.NewFlashcardRepository()
+	flashcardRepo := flashcard.NewFlashcardRepository(db)
 	favoriteRepo := favorite.NewFavoriteRepository()
 
 	// サービスの初期化

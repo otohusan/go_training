@@ -2,6 +2,7 @@ package flashcard
 
 import (
 	"database/sql"
+	"errors"
 	"go-training/domain/model"
 )
 
@@ -14,6 +15,34 @@ func NewFlashcardRepository(db *sql.DB) *FlashcardRepository {
 }
 
 func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashcard) error {
+	// フラッシュカードの作成クエリ
+	// flashcardが加えられるstudySetにあるuserIDと、
+	// リクエストしたuserのidが等しい場合のみflashcardを作成
+	query := `
+		INSERT INTO flashcards (study_set_id, question, answer)
+		SELECT $1, $2, $3
+		WHERE EXISTS (
+			SELECT 1
+			FROM study_sets
+			WHERE id = $1 AND user_id = $4
+		)
+	`
+
+	// クエリの実行
+	result, err := r.db.Exec(query, flashcard.StudySetID, flashcard.Question, flashcard.Answer, authUserID)
+	if err != nil {
+		return err
+	}
+
+	// 挿入が成功したか確認
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("not authorized to create flashcard or study set not found")
+	}
+
 	return nil
 }
 
