@@ -100,6 +100,29 @@ func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
 	}
 	return nil
 }
+
+// タイトルが合う学習セットを最大5件送信
 func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, error) {
-	return nil, nil
+	query := `SELECT id, user_id, title, description, created_at, updated_at FROM study_sets WHERE LOWER(title) LIKE '%' || LOWER($1) || '%' LIMIT 5`
+	rows, err := r.db.Query(query, title)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.StudySet
+
+	// 返信にクエリの結果を詰めてる
+	for rows.Next() {
+		studySet := &model.StudySet{}
+		err := rows.Scan(&studySet.ID, &studySet.UserID, &studySet.Title, &studySet.Description, &studySet.CreatedAt, &studySet.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, studySet)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return results, nil
 }
