@@ -41,8 +41,32 @@ func (r *StudySetRepository) GetByID(id string) (*model.StudySet, error) {
 	return studySet, nil
 }
 
+// ユーザが作成したすべての学習セットを配列に詰めて返す
 func (r *StudySetRepository) GetByUserID(userID string) ([]*model.StudySet, error) {
-	return nil, nil
+	query := `SELECT id, user_id, title, description, created_at, updated_at FROM study_sets WHERE user_id = $1`
+	rows, err := r.db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var studySets []*model.StudySet
+
+	// クエリをそれぞれstudySetの型にして、studySetsに詰めてる
+	for rows.Next() {
+		studySet := &model.StudySet{}
+		err := rows.Scan(&studySet.ID, &studySet.UserID, &studySet.Title, &studySet.Description, &studySet.CreatedAt, &studySet.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		studySets = append(studySets, studySet)
+	}
+
+	// エラーなければ返す
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return studySets, nil
 }
 
 func (r *StudySetRepository) Update(authUserID, studySetID string, studySet *model.StudySet) error {
