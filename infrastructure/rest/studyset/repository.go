@@ -43,7 +43,9 @@ func (r *StudySetRepository) GetByID(id string) (*model.StudySet, error) {
 
 // ユーザが作成したすべての学習セットを配列に詰めて返す
 func (r *StudySetRepository) GetByUserID(userID string) ([]*model.StudySet, error) {
-	query := `SELECT id, user_id, title, description, created_at, updated_at FROM study_sets WHERE user_id = $1`
+	query := `SELECT id, user_id, title, description, created_at, updated_at 
+			  FROM study_sets 
+			  WHERE user_id = $1`
 	rows, err := r.db.Query(query, userID)
 	if err != nil {
 		return nil, err
@@ -70,7 +72,8 @@ func (r *StudySetRepository) GetByUserID(userID string) ([]*model.StudySet, erro
 }
 
 func (r *StudySetRepository) Update(authUserID, studySetID string, studySet *model.StudySet) error {
-	query := `UPDATE study_sets SET title = $1, description = $2 WHERE id = $3 AND user_id = $4`
+	query := `UPDATE study_sets SET title = $1, description = $2 
+			  WHERE id = $3 AND user_id = $4`
 	result, err := r.db.Exec(query, studySet.Title, studySet.Description, studySetID, authUserID)
 	if err != nil {
 		return err
@@ -86,7 +89,8 @@ func (r *StudySetRepository) Update(authUserID, studySetID string, studySet *mod
 }
 
 func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
-	query := `DELETE FROM study_sets WHERE id = $1 AND user_id = $2`
+	query := `DELETE FROM study_sets 
+			  WHERE id = $1 AND user_id = $2`
 	result, err := r.db.Exec(query, studySetID, authUserID)
 	if err != nil {
 		return err
@@ -103,7 +107,10 @@ func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
 
 // タイトルが合う学習セットを最大5件送信
 func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, error) {
-	query := `SELECT id, user_id, title, description, created_at, updated_at FROM study_sets WHERE LOWER(title) LIKE '%' || LOWER($1) || '%' LIMIT 5`
+	query := `SELECT id, user_id, title, description, created_at, updated_at 
+			  FROM study_sets 
+			  WHERE LOWER(title) LIKE '%' || LOWER($1) || '%' 
+			  LIMIT 5`
 	rows, err := r.db.Query(query, title)
 	if err != nil {
 		return nil, err

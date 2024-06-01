@@ -27,7 +27,9 @@ func (r *UserRepository) CreateWithEmail(user *model.User) error {
 }
 
 func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
-	query := `SELECT id, username, email, created_at FROM users WHERE id = $1`
+	query := `SELECT id, username, email, created_at 
+			  FROM users 
+			  WHERE id = $1`
 	row := r.db.QueryRow(query, id)
 	user := &model.UserResponse{}
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
@@ -76,7 +78,9 @@ func (r *UserRepository) GetAll() ([]*model.User, error) {
 
 // loginの確認で使用するからuserの全情報を返す
 func (r *UserRepository) GetByEmail(email string) (*model.User, error) {
-	query := `SELECT id, username, password, email, created_at FROM users WHERE email = $1`
+	query := `SELECT id, username, password, email, created_at 
+			  FROM users 
+			  WHERE email = $1`
 	row := r.db.QueryRow(query, email)
 	user := &model.User{}
 	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Email, &user.CreatedAt)
