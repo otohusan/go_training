@@ -57,13 +57,20 @@ func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
 
 }
 
-func (r *UserRepository) GetByUsername(username string) (*model.User, error) {
+func (r *UserRepository) GetByUsername(username string) (*model.UserResponse, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	for _, user := range inmemory.Users {
 		if user.Name == username {
-			return user, nil
+			// UserからUserResponseへの変換
+			userResponse := &model.UserResponse{
+				ID:        user.ID,
+				Name:      user.Name,
+				Email:     user.Email,
+				CreatedAt: user.CreatedAt,
+			}
+			return userResponse, nil
 		}
 	}
 	return nil, errors.New("user not found")

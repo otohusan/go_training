@@ -42,7 +42,7 @@ func (s *UserService) GetUserByID(id string) (*model.UserResponse, error) {
 	return s.repo.GetByID(id)
 }
 
-func (s *UserService) GetUserByUsername(username string) (*model.User, error) {
+func (s *UserService) GetUserByUsername(username string) (*model.UserResponse, error) {
 	return s.repo.GetByUsername(username)
 }
 

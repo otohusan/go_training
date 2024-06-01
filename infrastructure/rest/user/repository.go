@@ -20,8 +20,8 @@ func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
 	return &model.UserResponse{}, nil
 }
 
-func (r *UserRepository) GetByUsername(username string) (*model.User, error) {
-	return &model.User{}, nil
+func (r *UserRepository) GetByUsername(username string) (*model.UserResponse, error) {
+	return &model.UserResponse{}, nil
 }
 
 func (r *UserRepository) Update(user *model.User) error {
