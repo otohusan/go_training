@@ -1,15 +1,17 @@
 package user
 
 import (
+	"database/sql"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 )
 
 type UserRepository struct {
+	db *sql.DB
 }
 
-func NewUserRepository() repository.UserRepository {
-	return &UserRepository{}
+func NewUserRepository(db *sql.DB) repository.UserRepository {
+	return &UserRepository{db: db}
 }
 
 func (r *UserRepository) CreateWithEmail(user *model.User) error {

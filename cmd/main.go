@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"go-training/application/service"
 	"go-training/handlers"
 	"go-training/middleware"
+	"log"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
 
 	// userRepo "go-training/infrastructure/rest"
 	favorite "go-training/infrastructure/InMemory/Favorite"
@@ -15,6 +18,14 @@ import (
 )
 
 func main() {
+
+	// データベース接続の設定
+	connStr := "user=user dbname=go_training sslmode=disable password=password"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	// リポジトリの初期化
 	userRepo := user.NewUserRepository()
