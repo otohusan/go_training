@@ -18,6 +18,7 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 func (r *UserRepository) CreateWithEmail(user *model.User) error {
 	// idとcreatedAtは自動で生成される
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, created_at`
+	// 作成と、作成されたIDをJWTを生成するためにuserにすぐ割り当てている
 	err := r.db.QueryRow(query, user.Name, user.Password, user.Email).Scan(&user.ID, &user.CreatedAt)
 	if err != nil {
 		return err
@@ -75,5 +76,15 @@ func (r *UserRepository) GetAll() ([]*model.User, error) {
 
 // loginの確認で使用するからuserの全情報を返す
 func (r *UserRepository) GetByEmail(email string) (*model.User, error) {
-	return &model.User{}, nil
+	query := `SELECT id, username, password, email, created_at FROM users WHERE email = $1`
+	row := r.db.QueryRow(query, email)
+	user := &model.User{}
+	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Email, &user.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return user, nil
 }

@@ -10,8 +10,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var mySigningKey = []byte("secret") // 実際の環境では安全にキーを管理してください。
-
 type UserHandler struct {
 	userService *service.UserService
 }
@@ -143,9 +141,8 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	}
 
 	// パスワードを比較
-	// TODO: 確かめやすいように簡易化してる
-	// err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
-	if user.Password != req.Password {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "password is not valid"})
 		return
 	}
