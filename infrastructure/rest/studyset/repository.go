@@ -86,6 +86,18 @@ func (r *StudySetRepository) Update(authUserID, studySetID string, studySet *mod
 }
 
 func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
+	query := `DELETE FROM study_sets WHERE id = $1 AND user_id = $2`
+	result, err := r.db.Exec(query, studySetID, authUserID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("not authorized to delete study set or study set not found")
+	}
 	return nil
 }
 func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, error) {
