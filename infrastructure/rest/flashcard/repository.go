@@ -65,7 +65,33 @@ func (r *FlashcardRepository) GetByID(id string) (*model.Flashcard, error) {
 }
 
 func (r *FlashcardRepository) GetByStudySetID(studySetID string) ([]*model.Flashcard, error) {
-	return nil, nil
+	query := `SELECT id, study_set_id, question, answer
+			  FROM flashcards
+			  WHERE study_set_id = $1`
+
+	// クエリ実行
+	rows, err := r.db.Query(query, studySetID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// 返り値
+	var flashcards []*model.Flashcard
+
+	// 結果を詰めていく
+	for rows.Next() {
+		flashcard := &model.Flashcard{}
+		err := rows.Scan(&flashcard.ID, &flashcard.StudySetID, &flashcard.Question, &flashcard.Answer)
+		if err != nil {
+			return nil, err
+		}
+		flashcards = append(flashcards, flashcard)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return flashcards, nil
 }
 
 func (r *FlashcardRepository) Update(authUserID string, flashcard *model.Flashcard) error {
