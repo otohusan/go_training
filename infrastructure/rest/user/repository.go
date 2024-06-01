@@ -17,8 +17,8 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 
 func (r *UserRepository) CreateWithEmail(user *model.User) error {
 	// idとcreatedAtは自動で生成される
-	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
-	_, err := r.db.Exec(query, user.Name, user.Password, user.Email)
+	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, created_at`
+	err := r.db.QueryRow(query, user.Name, user.Password, user.Email).Scan(&user.ID, &user.CreatedAt)
 	if err != nil {
 		return err
 	}
