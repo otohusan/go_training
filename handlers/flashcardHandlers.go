@@ -76,8 +76,7 @@ func (h *FlashcardHandler) UpdateFlashcard(c *gin.Context) {
 	// flashcardの作成者を確かめるために色々取り出す
 	flashcardID := c.Param("flashcardID")
 	flashcard.ID = flashcardID
-	studySetID := c.Param("studySetID")
-	flashcard.StudySetID = studySetID
+
 	// 認証IDを取り出す
 	AuthUserID, exists := c.Get("AuthUserID")
 	if !exists {

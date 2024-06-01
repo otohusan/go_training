@@ -95,6 +95,30 @@ func (r *FlashcardRepository) GetByStudySetID(studySetID string) ([]*model.Flash
 }
 
 func (r *FlashcardRepository) Update(authUserID string, flashcard *model.Flashcard) error {
+	query := `
+		UPDATE flashcards
+		SET question = $1, answer = $2
+		FROM study_sets
+		WHERE flashcards.study_set_id = study_sets.id
+		  AND flashcards.id = $3
+		  AND study_sets.user_id = $4
+	`
+
+	// クエリの実行
+	result, err := r.db.Exec(query, flashcard.Question, flashcard.Answer, flashcard.ID, authUserID)
+	if err != nil {
+		return err
+	}
+
+	// 更新が成功したか確認
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("not authorized to update flashcard or flashcard not found")
+	}
+
 	return nil
 }
 

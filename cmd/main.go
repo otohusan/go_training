@@ -127,8 +127,8 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	authFlashcardRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
 		authFlashcardRoutes.POST("/:studySetID", flashcardHandler.CreateFlashcard)
-		authFlashcardRoutes.PUT("/:flashcardID/:studySetID", flashcardHandler.UpdateFlashcard)
-		authFlashcardRoutes.DELETE("/:flashcardID/:studySetID", flashcardHandler.DeleteFlashcard)
+		authFlashcardRoutes.PUT("/:flashcardID", flashcardHandler.UpdateFlashcard)
+		authFlashcardRoutes.DELETE("/:flashcardID", flashcardHandler.DeleteFlashcard)
 	}
 
 	// お気に入り関連のルート
