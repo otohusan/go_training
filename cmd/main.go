@@ -13,11 +13,11 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
-	// userRepo "go-training/infrastructure/rest"
 	favorite "go-training/infrastructure/InMemory/Favorite"
 	flashcard "go-training/infrastructure/InMemory/FlashCard"
 	studySet "go-training/infrastructure/InMemory/StudySet"
-	user "go-training/infrastructure/InMemory/User"
+	"go-training/infrastructure/rest/user"
+	// user "go-training/infrastructure/InMemory/User"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func main() {
 	defer db.Close()
 
 	// リポジトリの初期化
-	userRepo := user.NewUserRepository()
+	userRepo := user.NewUserRepository(db)
 	studySetRepo := studySet.NewStudySetRepository()
 	flashcardRepo := flashcard.NewFlashcardRepository()
 	favoriteRepo := favorite.NewFavoriteRepository()

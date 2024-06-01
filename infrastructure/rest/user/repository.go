@@ -15,6 +15,11 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 }
 
 func (r *UserRepository) CreateWithEmail(user *model.User) error {
+	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
+	_, err := r.db.Exec(query, user.Name, user.Password, user.Email)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
