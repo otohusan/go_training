@@ -70,6 +70,18 @@ func (r *StudySetRepository) GetByUserID(userID string) ([]*model.StudySet, erro
 }
 
 func (r *StudySetRepository) Update(authUserID, studySetID string, studySet *model.StudySet) error {
+	query := `UPDATE study_sets SET title = $1, description = $2 WHERE id = $3 AND user_id = $4`
+	result, err := r.db.Exec(query, studySet.Title, studySet.Description, studySetID, authUserID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("not authorized to update study set or study set not found")
+	}
 	return nil
 }
 
