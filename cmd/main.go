@@ -15,9 +15,10 @@ import (
 
 	favorite "go-training/infrastructure/InMemory/Favorite"
 	flashcard "go-training/infrastructure/InMemory/FlashCard"
-	studySet "go-training/infrastructure/InMemory/StudySet"
+	"go-training/infrastructure/rest/studyset"
 	"go-training/infrastructure/rest/user"
 	// user "go-training/infrastructure/InMemory/User"
+	// studyset "go-training/infrastructure/InMemory/StudySet"
 )
 
 func main() {
@@ -47,7 +48,7 @@ func main() {
 
 	// リポジトリの初期化
 	userRepo := user.NewUserRepository(db)
-	studySetRepo := studySet.NewStudySetRepository()
+	studySetRepo := studyset.NewStudySetRepository(db)
 	flashcardRepo := flashcard.NewFlashcardRepository()
 	favoriteRepo := favorite.NewFavoriteRepository()
 
