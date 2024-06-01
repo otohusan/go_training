@@ -36,13 +36,20 @@ func (r *UserRepository) CreateWithEmail(user *model.User) error {
 	return nil
 }
 
-func (r *UserRepository) GetByID(id string) (*model.User, error) {
+func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	for _, user := range inmemory.Users {
 		if user.ID == id {
-			return user, nil
+			// UserからUserResponseへの変換
+			userResponse := &model.UserResponse{
+				ID:        user.ID,
+				Name:      user.Name,
+				Email:     user.Email,
+				CreatedAt: user.CreatedAt,
+			}
+			return userResponse, nil
 		}
 	}
 

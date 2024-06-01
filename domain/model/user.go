@@ -13,8 +13,10 @@ type User struct {
 }
 
 type UserResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID        string
+	Name      string
+	Email     string
+	CreatedAt time.Time
 }
 
 type UserCredentials struct {

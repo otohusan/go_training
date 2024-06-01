@@ -38,7 +38,7 @@ func (s *UserService) CreateUserWithEmail(user *model.User) error {
 	return s.repo.CreateWithEmail(user)
 }
 
-func (s *UserService) GetUserByID(id string) (*model.User, error) {
+func (s *UserService) GetUserByID(id string) (*model.UserResponse, error) {
 	return s.repo.GetByID(id)
 }
 
