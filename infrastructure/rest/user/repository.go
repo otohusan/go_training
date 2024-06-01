@@ -40,10 +40,19 @@ func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
 }
 
 func (r *UserRepository) GetByUsername(username string) (*model.UserResponse, error) {
-	return &model.UserResponse{}, nil
+	// 製品で使う予定がまだないから開発しない
+	// usernameはuniqueじゃないから複数の値を返すのに、配列の返り値なってない
+	return nil, errors.New("this func is still developing")
+
+	// return &model.UserResponse{}, nil
 }
 
 func (r *UserRepository) Update(user *model.User) error {
+	query := `UPDATE users SET username = $1 WHERE id = $2`
+	_, err := r.db.Exec(query, user.Name, user.ID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -52,9 +61,14 @@ func (r *UserRepository) Delete(id string) error {
 }
 
 func (r *UserRepository) GetAll() ([]*model.User, error) {
-	return []*model.User{}, nil
+	// 製品で使う予定がまだないから開発しない
+	// usernameはuniqueじゃないから複数の値を返すのに、配列の返り値なってない
+	return nil, errors.New("this func is still developing")
+
+	// return []*model.User{}, nil
 }
 
+// loginの確認で使用するからuserの全情報を返す
 func (r *UserRepository) GetByEmail(email string) (*model.User, error) {
 	return &model.User{}, nil
 }
