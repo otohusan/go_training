@@ -2,12 +2,15 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"go-training/application/service"
 	"go-training/handlers"
 	"go-training/middleware"
 	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
 	// userRepo "go-training/infrastructure/rest"
@@ -19,8 +22,23 @@ import (
 
 func main() {
 
+	// .envファイルの読み込み
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// 環境変数の取得
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	dbSSLMode := os.Getenv("DB_SSLMODE")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+
 	// データベース接続の設定
-	connStr := "user=user dbname=go_training sslmode=disable password=password"
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s host=%s port=%s",
+		dbUser, dbPassword, dbName, dbSSLMode, dbHost, dbPort)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
