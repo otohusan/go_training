@@ -25,6 +25,7 @@ func (h *UserHandler) CreateUserWithEmail(c *gin.Context) {
 		return
 	}
 
+	// NOTICE: service層ですべき行動が行われてしまってる
 	// パスワードのハッシュ化
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -127,6 +128,7 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 		return
 	}
 
+	// NOTICE: service層ですべき行動が行われてしまってる
 	// 必要な情報があるか
 	if req.Email == "" || req.Password == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "情報が足りません"})
