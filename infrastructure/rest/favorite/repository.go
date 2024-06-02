@@ -14,11 +14,21 @@ func NewFavoriteRepository(db *sql.DB) *FavoriteRepository {
 }
 
 func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
+	query := `INSERT INTO favorites (user_id, study_set_id) VALUES ($1, $2)`
+	_, err := r.db.Exec(query, userID, studySetID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (r *FavoriteRepository) RemoveFavorite(userID, studySetID string) error {
 	return nil
+}
+
+func (r *FavoriteRepository) IsFavorite(userID, studySetID string) (bool, error) {
+	return false, nil
 }
 
 func (r *FavoriteRepository) GetFavoritesByUserID(userID string) ([]*model.Favorite, error) {

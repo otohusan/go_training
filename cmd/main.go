@@ -13,13 +13,14 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
-	favorite "go-training/infrastructure/InMemory/Favorite"
+	"go-training/infrastructure/rest/favorite"
 	"go-training/infrastructure/rest/flashcard"
 	"go-training/infrastructure/rest/studyset"
 	"go-training/infrastructure/rest/user"
 	// user "go-training/infrastructure/InMemory/User"
 	// studyset "go-training/infrastructure/InMemory/StudySet"
 	// flashcard "go-training/infrastructure/InMemory/FlashCard"
+	// favorite "go-training/infrastructure/InMemory/Favorite"
 )
 
 func main() {
@@ -51,7 +52,7 @@ func main() {
 	userRepo := user.NewUserRepository(db)
 	studySetRepo := studyset.NewStudySetRepository(db)
 	flashcardRepo := flashcard.NewFlashcardRepository(db)
-	favoriteRepo := favorite.NewFavoriteRepository()
+	favoriteRepo := favorite.NewFavoriteRepository(db)
 
 	// サービスの初期化
 	userService := service.NewUserService(userRepo)
