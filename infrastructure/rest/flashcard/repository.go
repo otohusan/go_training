@@ -122,6 +122,29 @@ func (r *FlashcardRepository) Update(authUserID string, flashcard *model.Flashca
 	return nil
 }
 
-func (r *FlashcardRepository) Delete(authUserID, studySetID, flashcardID string) error {
+func (r *FlashcardRepository) Delete(authUserID, flashcardID string) error {
+	query := `
+		DELETE FROM flashcards
+		USING study_sets
+		WHERE flashcards.study_set_id = study_sets.id
+		  AND flashcards.id = $1
+		  AND study_sets.user_id = $2
+	`
+
+	// クエリの実行
+	result, err := r.db.Exec(query, flashcardID, authUserID)
+	if err != nil {
+		return err
+	}
+
+	// 削除が成功したか確認
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("not authorized to delete flashcard or flashcard not found")
+	}
+
 	return nil
 }

@@ -14,7 +14,7 @@ import (
 	_ "github.com/lib/pq"
 
 	favorite "go-training/infrastructure/InMemory/Favorite"
-	flashcard "go-training/infrastructure/rest/flashCard"
+	"go-training/infrastructure/rest/flashcard"
 	"go-training/infrastructure/rest/studyset"
 	"go-training/infrastructure/rest/user"
 	// user "go-training/infrastructure/InMemory/User"

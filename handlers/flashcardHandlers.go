@@ -94,8 +94,8 @@ func (h *FlashcardHandler) UpdateFlashcard(c *gin.Context) {
 }
 
 func (h *FlashcardHandler) DeleteFlashcard(c *gin.Context) {
+
 	flashcardID := c.Param("flashcardID")
-	studySetID := c.Param("studySetID")
 
 	// 認証IDを取り出す
 	AuthUserID, exists := c.Get("AuthUserID")
@@ -104,7 +104,7 @@ func (h *FlashcardHandler) DeleteFlashcard(c *gin.Context) {
 		return
 	}
 
-	err := h.flashcardService.DeleteFlashcard(AuthUserID.(string), studySetID, flashcardID)
+	err := h.flashcardService.DeleteFlashcard(AuthUserID.(string), flashcardID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -54,6 +54,6 @@ func (s *FlashcardService) UpdateFlashcard(authUSerID string, flashcard *model.F
 	return s.repo.Update(authUSerID, flashcard)
 }
 
-func (s *FlashcardService) DeleteFlashcard(authUSerID, studySetID, flashcardID string) error {
-	return s.repo.Delete(authUSerID, studySetID, flashcardID)
+func (s *FlashcardService) DeleteFlashcard(authUSerID, flashcardID string) error {
+	return s.repo.Delete(authUSerID, flashcardID)
 }

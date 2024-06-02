@@ -7,5 +7,5 @@ type FlashcardRepository interface {
 	GetByID(id string) (*model.Flashcard, error)
 	GetByStudySetID(studySetID string) ([]*model.Flashcard, error)
 	Update(authUSerID string, flashcard *model.Flashcard) error
-	Delete(authUSerID, studySetID, flashcardID string) error
+	Delete(authUSerID, flashcardID string) error
 }

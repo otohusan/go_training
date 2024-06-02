@@ -111,13 +111,21 @@ func (r *FlashcardRepository) Update(authUserID string, flashcard *model.Flashca
 
 }
 
-func (r *FlashcardRepository) Delete(authUserID, studySetID, flashcardID string) error {
+func (r *FlashcardRepository) Delete(authUserID, flashcardID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	// パフォーマンスを考慮して
 	// 本番のクエリを1回にするためにリポジトリで認可行う
 
 	var studySet *model.StudySet
+
+	// フラッシュカード調べてstudysetのid取得
+	var studySetID string
+	for _, f := range inmemory.Favorites {
+		if f.ID == flashcardID {
+			studySetID = f.StudySetID
+		}
+	}
 
 	// 学習セットのオーナーを調べる
 	for _, s := range inmemory.StudySets {
