@@ -2,6 +2,7 @@ package favorite
 
 import (
 	"database/sql"
+	"errors"
 	"go-training/domain/model"
 )
 
@@ -24,6 +25,20 @@ func (r *FavoriteRepository) AddFavorite(userID, studySetID string) error {
 }
 
 func (r *FavoriteRepository) RemoveFavorite(userID, studySetID string) error {
+	query := `DELETE FROM favorites WHERE user_id = $1 AND study_set_id = $2`
+	result, err := r.db.Exec(query, userID, studySetID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("favorite not found")
+	}
+
 	return nil
 }
 
