@@ -40,11 +40,11 @@ func (s *AuthService) RegisterWithEmail(username, email, password string) (strin
 
 	// メールアドレスの重複チェック
 	// ユーザを取得して空じゃなかったらエラー
-	exists, err := s.userRepo.GetByEmail(email)
+	exists, err := s.userRepo.IsEmailExist(email)
 	if err != nil {
 		return "", err
 	}
-	if exists != nil {
+	if exists {
 		return "", errors.New("email already in use")
 	}
 

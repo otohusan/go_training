@@ -124,3 +124,15 @@ func (r *UserRepository) GetByEmail(email string) (*model.User, error) {
 	}
 	return nil, errors.New("user not found")
 }
+
+func (r *UserRepository) IsEmailExist(email string) (bool, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for _, user := range inmemory.Users {
+		if user.Email == email {
+			return true, nil
+		}
+	}
+	return false, nil
+}
