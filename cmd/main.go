@@ -16,13 +16,13 @@ import (
 	"go-training/infrastructure/rest/favorite"
 	"go-training/infrastructure/rest/flashcard"
 	"go-training/infrastructure/rest/studyset"
-
-	// "go-training/infrastructure/rest/user"
-	user "go-training/infrastructure/InMemory/User"
+	"go-training/infrastructure/rest/user"
+	"go-training/infrastructure/rest/verification"
+	// user "go-training/infrastructure/InMemory/User"
 	// studyset "go-training/infrastructure/InMemory/StudySet"
 	// flashcard "go-training/infrastructure/InMemory/FlashCard"
 	// favorite "go-training/infrastructure/InMemory/Favorite"
-	verification "go-training/infrastructure/InMemory/verification"
+	// verification "go-training/infrastructure/InMemory/verification"
 )
 
 func main() {
@@ -51,11 +51,11 @@ func main() {
 	defer db.Close()
 
 	// リポジトリの初期化
-	userRepo := user.NewUserRepository()
+	userRepo := user.NewUserRepository(db)
 	studySetRepo := studyset.NewStudySetRepository(db)
 	flashcardRepo := flashcard.NewFlashcardRepository(db)
 	favoriteRepo := favorite.NewFavoriteRepository(db)
-	verificationRepo := verification.NewVerificationRepository()
+	verificationRepo := verification.NewVerificationRepository(db)
 
 	// サービスの初期化
 	userService := service.NewUserService(userRepo)
