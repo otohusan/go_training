@@ -21,6 +21,18 @@ func NewAuthService(userRepo repository.UserRepository, verificationRepo reposit
 }
 
 func (s *AuthService) RegisterWithEmail(username, email, password string) (string, error) {
+
+	// 必要情報があるかチェック
+	if username == "" {
+		return "", errors.New("username cannot be empty")
+	}
+	if email == "" {
+		return "", errors.New("email cannot be empty")
+	}
+	if password == "" {
+		return "", errors.New("password cannot be empty")
+	}
+
 	// メールアドレスの形式を検証
 	if _, err := mail.ParseAddress(email); err != nil {
 		return "", errors.New("invalid email format")
