@@ -56,3 +56,29 @@ func (s *AuthService) RegisterWithEmail(username, email, password string) (strin
 
 	return "verification email sent, please check your email for verification", nil
 }
+
+// emailをユーザが開くとトークンを確認して、本登録
+func (s *AuthService) VerifyEmail(token string) (string, error) {
+	// トークンの確認と仮登録情報の取得
+	verification, err := s.verificationRepo.GetVerificationInfoByToken(token)
+	if err != nil {
+		return "", errors.New("invalid or expired token")
+	}
+
+	// ユーザーの作成
+	user := &model.User{
+		Name:     verification.Username,
+		Email:    verification.Email,
+		Password: verification.Password,
+	}
+	if err := s.userRepo.CreateWithEmail(user); err != nil {
+		return "", err
+	}
+
+	// トークンを削除
+	if err := s.verificationRepo.DeleteVerificationToken(token); err != nil {
+		return "", err
+	}
+
+	return "email verified and user created successfully", nil
+}
