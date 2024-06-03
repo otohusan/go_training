@@ -41,5 +41,13 @@ func (r *VerificationRepository) GetVerificationInfoByToken(token string) (*mode
 }
 
 func (r *VerificationRepository) DeleteVerificationToken(token string) error {
+	query := `DELETE FROM email_verifications WHERE token = $1`
+	_, err := r.db.Exec(query, token)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("token not found")
+		}
+		return err
+	}
 	return nil
 }
