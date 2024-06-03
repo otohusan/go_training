@@ -15,7 +15,7 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
-func (h *AuthHandler) Register(c *gin.Context) {
+func (h *AuthHandler) RegisterWithEmail(c *gin.Context) {
 	// 受け取るデータ構造を定義、受け取り
 	var registrationData struct {
 		Username string `json:"username"`

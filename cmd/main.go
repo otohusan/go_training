@@ -16,11 +16,13 @@ import (
 	"go-training/infrastructure/rest/favorite"
 	"go-training/infrastructure/rest/flashcard"
 	"go-training/infrastructure/rest/studyset"
-	"go-training/infrastructure/rest/user"
-	// user "go-training/infrastructure/InMemory/User"
+
+	// "go-training/infrastructure/rest/user"
+	user "go-training/infrastructure/InMemory/User"
 	// studyset "go-training/infrastructure/InMemory/StudySet"
 	// flashcard "go-training/infrastructure/InMemory/FlashCard"
 	// favorite "go-training/infrastructure/InMemory/Favorite"
+	verification "go-training/infrastructure/InMemory/verification"
 )
 
 func main() {
@@ -49,35 +51,38 @@ func main() {
 	defer db.Close()
 
 	// リポジトリの初期化
-	userRepo := user.NewUserRepository(db)
+	userRepo := user.NewUserRepository()
 	studySetRepo := studyset.NewStudySetRepository(db)
 	flashcardRepo := flashcard.NewFlashcardRepository(db)
 	favoriteRepo := favorite.NewFavoriteRepository(db)
+	verificationRepo := verification.NewVerificationRepository()
 
 	// サービスの初期化
 	userService := service.NewUserService(userRepo)
 	studySetService := service.NewStudySetService(studySetRepo)
 	flashcardService := service.NewFlashcardService(flashcardRepo)
 	favoriteService := service.NewFavoriteService(favoriteRepo)
+	authService := service.NewAuthService(userRepo, verificationRepo)
 
 	// ハンドラーの初期化
 	userHandler := handlers.NewUserHandler(userService)
 	studySetHandler := handlers.NewStudySetHandler(studySetService)
 	flashcardHandler := handlers.NewFlashcardHandler(flashcardService, studySetService)
 	favoriteHandler := handlers.NewFavoriteHandler(favoriteService)
+	authHandler := handlers.NewAuthHandler(authService)
 
 	// Ginのルーターを設定
 	router := gin.Default()
 
 	// ルートの設定
-	setupRoutes(router, userHandler, studySetHandler, flashcardHandler, favoriteHandler)
+	setupRoutes(router, userHandler, studySetHandler, flashcardHandler, favoriteHandler, authHandler)
 
 	// サーバーの起動
 	router.Run(":8080")
 }
 
 func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySetHandler *handlers.StudySetHandler,
-	flashcardHandler *handlers.FlashcardHandler, favoriteHandler *handlers.FavoriteHandler) {
+	flashcardHandler *handlers.FlashcardHandler, favoriteHandler *handlers.FavoriteHandler, authHandler *handlers.AuthHandler) {
 	// ユーザー関連のルートをグループ化
 	userRoutes := router.Group("/users")
 	{
@@ -146,4 +151,8 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 		authFavoriteRoutes.DELETE("/user/:userID/studyset/:studySetID", favoriteHandler.RemoveFavorite)
 		authFavoriteRoutes.GET("/user/:userID", favoriteHandler.GetFavoritesByUserID)
 	}
+
+	// user登録のルート
+	router.POST("/register/email", authHandler.RegisterWithEmail)
+	router.GET("verify/:token", authHandler.VerifyEmail)
 }
