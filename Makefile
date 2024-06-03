@@ -1,3 +1,5 @@
+include .env
+
 # マイグレーションを実行するタスク
 migrate-up:
 	migrate -database ${POSTGRESQL_URL} -path migrations up
