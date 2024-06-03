@@ -154,5 +154,5 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 
 	// user登録のルート
 	router.POST("/register/email", authHandler.RegisterWithEmail)
-	router.GET("verify/:token", authHandler.VerifyEmail)
+	router.GET("/verify", authHandler.VerifyEmail)
 }
