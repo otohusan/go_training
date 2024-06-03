@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
+	"go-training/utils"
 	"net/mail"
 
 	"github.com/google/uuid"
@@ -18,7 +19,7 @@ func NewAuthService(userRepo repository.UserRepository, verificationRepo reposit
 	return &AuthService{userRepo: userRepo, verificationRepo: verificationRepo}
 }
 
-func (s *AuthService) Register(username, email, password string) (string, error) {
+func (s *AuthService) RegisterWithEmail(username, email, password string) (string, error) {
 	// メールアドレスの形式を検証
 	if _, err := mail.ParseAddress(email); err != nil {
 		return "", errors.New("invalid email format")
@@ -48,7 +49,10 @@ func (s *AuthService) Register(username, email, password string) (string, error)
 	}
 
 	// 検証メール送信
+	// NOTICE: endVerificationEmailは形だけの状態
+	if err := utils.SendVerificationEmail(email, token); err != nil {
+		return "", err
+	}
 
 	return "verification email sent, please check your email for verification", nil
-
 }
