@@ -15,6 +15,11 @@ func NewVerificationRepository(db *sql.DB) repository.EmailVerificationRepositor
 }
 
 func (r *VerificationRepository) SaveVerificationToken(verificationValue *model.EmailVerification) error {
+	query := `INSERT INTO email_verifications (email, token, username, password) VALUES ($1, $2, $3, $4)`
+	_, err := r.db.Exec(query, verificationValue.Email, verificationValue.Token, verificationValue.Username, verificationValue.Password)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
