@@ -75,3 +75,5 @@ var Favorites = []*model.Favorite{
 		CreatedAt:  time.Now(),
 	},
 }
+
+var EmailVerification = []*model.EmailVerification{}
