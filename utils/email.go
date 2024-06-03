@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-// TODO: ホストの情報は環境変数から取得に変更
 func SendVerificationEmail(email, token string) error {
 	// 環境変数からSMTP設定を読み込む
 	smtpHost := os.Getenv("SMTP_HOST")
