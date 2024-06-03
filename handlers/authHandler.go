@@ -54,5 +54,6 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 		return
 	}
 
+	// TODO: リダイレクト先が作成できれば、そこに行ってもらう
 	c.JSON(http.StatusOK, gin.H{"message": message})
 }
