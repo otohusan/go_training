@@ -76,4 +76,4 @@ var Favorites = []*model.Favorite{
 	},
 }
 
-var EmailVerification = []*model.EmailVerification{}
+var EmailVerifications = []*model.EmailVerification{}
