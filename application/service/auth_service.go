@@ -8,6 +8,7 @@ import (
 	"net/mail"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
@@ -35,14 +36,19 @@ func (s *AuthService) RegisterWithEmail(username, email, password string) (strin
 		return "", errors.New("email already in use")
 	}
 
+	// パスワードのハッシュ化
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
 	// 検証トークンの生成と保存
-	// TODO: verificationテーブルにpasswordが生で入ってるから直す
 	token := uuid.New().String()
 	verification := &model.EmailVerification{
 		Email:    email,
 		Token:    token,
 		Username: username,
-		Password: password,
+		Password: string(hashedPassword),
 	}
 
 	if err := s.verificationRepo.SaveVerificationToken(verification); err != nil {
