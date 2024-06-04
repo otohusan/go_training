@@ -61,7 +61,7 @@ func main() {
 
 	// サービスの初期化
 	userService := service.NewUserService(userRepo)
-	studySetService := service.NewStudySetService(studySetRepo)
+	studySetService := service.NewStudySetService(studySetRepo, flashcardRepo)
 	flashcardService := service.NewFlashcardService(flashcardRepo)
 	favoriteService := service.NewFavoriteService(favoriteRepo)
 	authService := service.NewAuthService(userRepo, verificationRepo)

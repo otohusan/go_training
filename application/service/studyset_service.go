@@ -22,12 +22,14 @@ func validateStudySet(studySet *model.StudySet) error {
 }
 
 type StudySetService struct {
-	repo repository.StudySetRepository
+	repo          repository.StudySetRepository
+	flashcardRepo repository.FlashcardRepository
 }
 
-func NewStudySetService(repo repository.StudySetRepository) *StudySetService {
+func NewStudySetService(repo repository.StudySetRepository, flashcardRepo repository.FlashcardRepository) *StudySetService {
 	return &StudySetService{
-		repo: repo,
+		repo:          repo,
+		flashcardRepo: flashcardRepo,
 	}
 }
 
@@ -70,4 +72,22 @@ func (s *StudySetService) DeleteStudySet(authUserID, studySetID string) error {
 
 func (s *StudySetService) SearchStudySetsByTitle(title string) ([]*model.StudySet, error) {
 	return s.repo.SearchByTitle(title)
+}
+
+// flashCardも含めて学習セットを返す
+func (s *StudySetService) GetStudySetsWithFlashcardsByUserID(userID string) ([]*model.StudySet, error) {
+	studySets, err := s.repo.GetByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, studySet := range studySets {
+		flashcards, err := s.flashcardRepo.GetByStudySetID(studySet.ID)
+		if err != nil {
+			return nil, err
+		}
+		studySet.Flashcards = flashcards
+	}
+
+	return studySets, nil
 }

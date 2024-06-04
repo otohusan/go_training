@@ -53,7 +53,7 @@ func (h *StudySetHandler) GetStudySetByID(c *gin.Context) {
 func (h *StudySetHandler) GetStudySetsByUserID(c *gin.Context) {
 	userID := c.Param("userID")
 
-	studySets, err := h.studySetService.GetStudySetsByUserID(userID)
+	studySets, err := h.studySetService.GetStudySetsWithFlashcardsByUserID(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
