@@ -81,6 +81,8 @@ func (s *StudySetService) GetStudySetsWithFlashcardsByUserID(userID string) ([]*
 		return nil, err
 	}
 
+	//NOTICE: クエリをユーザの学習セット分行うから効率悪い
+	// もっと良い方法ありそう
 	for _, studySet := range studySets {
 		flashcards, err := s.flashcardRepo.GetByStudySetID(studySet.ID)
 		if err != nil {
