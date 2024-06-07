@@ -47,8 +47,11 @@ func (s *FlashcardService) GetFlashcardsByStudySetID(studySetID string) ([]*mode
 }
 
 func (s *FlashcardService) UpdateFlashcard(authUSerID string, flashcard *model.Flashcard) error {
-	if err := validateFlashCard(flashcard); err != nil {
-		return err
+	if flashcard.Question == "" {
+		return errors.New("question cannot be empty")
+	}
+	if flashcard.Answer == "" {
+		return errors.New("answer cannot be empty")
 	}
 
 	return s.repo.Update(authUSerID, flashcard)
