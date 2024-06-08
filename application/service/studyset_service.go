@@ -34,12 +34,11 @@ func NewStudySetService(repo repository.StudySetRepository, flashcardRepo reposi
 }
 
 func (s *StudySetService) CreateStudySet(authUserID string, studySet *model.StudySet) error {
-	if err := validateStudySet(studySet); err != nil {
-		return err
+	if studySet.Title == "" {
+		return errors.New("title cannot be empty")
 	}
-
-	if authUserID != studySet.UserID {
-		return errors.New("not authorized to create study set")
+	if studySet.Description == "" {
+		return errors.New("description cannot be empty")
 	}
 
 	return s.repo.Create(studySet)

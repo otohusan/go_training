@@ -29,6 +29,8 @@ func (h *StudySetHandler) CreateStudySet(c *gin.Context) {
 		return
 	}
 
+	studySet.UserID = AuthUserID.(string)
+
 	err := h.studySetService.CreateStudySet(AuthUserID.(string), &studySet)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
