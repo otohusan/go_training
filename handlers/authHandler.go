@@ -55,5 +55,11 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 	}
 
 	// TODO: リダイレクト先が作成できれば、そこに行ってもらう
+	// リダイレクト先を設定
+	redirectURL := "http://localhost:5173/Login"
+
+	// リダイレクト
+	c.Redirect(http.StatusFound, redirectURL)
+
 	c.JSON(http.StatusOK, gin.H{"message": message})
 }
