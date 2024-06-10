@@ -29,8 +29,13 @@ import (
 
 func main() {
 
+	env := os.Getenv("GIN_MODE")
+	if env == "" {
+		env = "development"
+	}
+
 	// .envファイルの読み込み
-	err := godotenv.Load()
+	err := godotenv.Load(fmt.Sprintf(".env.%s", env))
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
