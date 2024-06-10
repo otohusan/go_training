@@ -87,13 +87,20 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	flashcardHandler *handlers.FlashcardHandler, favoriteHandler *handlers.FavoriteHandler, authHandler *handlers.AuthHandler) {
 	// CORSの設定
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"}, // クライアントのオリジンを許可
+		AllowOrigins:     []string{"http://localhost:5173", "https://konwalk.jp"}, // クライアントのオリジンを許可
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+	// 信頼できるプロキシを空に設定
+	// CDNなんかは今のとこしよしてないから、これで良いはず
+	// デプロイ環境次第では変える必要があるかも
+	if err := router.SetTrustedProxies([]string{}); err != nil {
+		log.Fatal(err)
+	}
 
 	// ユーザー関連のルートをグループ化
 	userRoutes := router.Group("/users")
