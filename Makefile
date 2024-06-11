@@ -23,3 +23,8 @@ run-dev:
 run-release:
 	GIN_MODE=release go run cmd/main.go
 
+# render.comにデプロイするときのbuildコマンド
+build:
+	make migrate-up
+	go build -tags netgo -ldflags '-s -w' -o app ./cmd/main.go
+
