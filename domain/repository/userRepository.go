@@ -12,5 +12,6 @@ type UserRepository interface {
 	// これはログイン時に使うメソッドだからパスワードを含む構造体を使う
 	GetByEmail(email string) (*model.User, error)
 	IsEmailExist(email string) (bool, error)
+	IsUsernameExist(username string) (bool, error)
 	GetAll() ([]*model.User, error)
 }

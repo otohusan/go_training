@@ -108,3 +108,19 @@ func (r *UserRepository) IsEmailExist(email string) (bool, error) {
 
 	return true, nil
 }
+
+func (r *UserRepository) IsUsernameExist(username string) (bool, error) {
+	query := `SELECT 1 FROM users WHERE username = $1`
+	row := r.db.QueryRow(query, username)
+
+	var exists int
+	err := row.Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
+}

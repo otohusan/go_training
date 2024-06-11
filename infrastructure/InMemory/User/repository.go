@@ -136,3 +136,15 @@ func (r *UserRepository) IsEmailExist(email string) (bool, error) {
 	}
 	return false, nil
 }
+
+func (r *UserRepository) IsUsernameExist(username string) (bool, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for _, user := range inmemory.Users {
+		if user.Name == username {
+			return true, nil
+		}
+	}
+	return false, nil
+}
