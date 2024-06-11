@@ -8,11 +8,11 @@ import (
 	"go-training/middleware"
 	"log"
 	"os"
-	"os/exec"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
 	"go-training/infrastructure/rest/favorite"
@@ -35,11 +35,10 @@ func main() {
 	}
 
 	// .envファイルの読み込み
-	// render.comでデプロイするから、一旦消す
-	// err := godotenv.Load(fmt.Sprintf(".env.%s", env))
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file")
-	// }
+	err := godotenv.Load(fmt.Sprintf(".env.%s", env))
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	// 環境変数の取得
 	dbUser := os.Getenv("DB_USER")
@@ -48,15 +47,6 @@ func main() {
 	dbSSLMode := os.Getenv("DB_SSLMODE")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
-	dbURL := os.Getenv("POSTGRESQL_URL")
-
-	// migrate コマンドを実行
-	cmd := exec.Command("migrate", "-database", dbURL, "-path", "migrations", "up")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("migrate command failed: %v", err)
-	}
 
 	// データベース接続の設定
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s host=%s port=%s",
