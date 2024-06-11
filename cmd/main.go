@@ -12,7 +12,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
 	"go-training/infrastructure/rest/favorite"
@@ -35,10 +34,11 @@ func main() {
 	}
 
 	// .envファイルの読み込み
-	err := godotenv.Load(fmt.Sprintf(".env.%s", env))
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// render.comでデプロイするから、一旦消す
+	// err := godotenv.Load(fmt.Sprintf(".env.%s", env))
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	// 環境変数の取得
 	dbUser := os.Getenv("DB_USER")
