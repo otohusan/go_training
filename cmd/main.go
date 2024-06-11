@@ -8,6 +8,7 @@ import (
 	"go-training/middleware"
 	"log"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -47,6 +48,15 @@ func main() {
 	dbSSLMode := os.Getenv("DB_SSLMODE")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
+	dbURL := os.Getenv("POSTGRESQL_URL")
+
+	// migrate コマンドを実行
+	cmd := exec.Command("migrate", "-database", dbURL, "-path", "migrations", "up")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("migrate command failed: %v", err)
+	}
 
 	// データベース接続の設定
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s host=%s port=%s",
