@@ -75,3 +75,11 @@ func (s *UserService) GetUserByEmail(email string) (*model.User, error) {
 func (s *UserService) GetAllUsers() ([]*model.User, error) {
 	return s.repo.GetAll()
 }
+
+func (s *UserService) IsEmailExist(email string) (bool, error) {
+	return s.repo.IsEmailExist(email)
+}
+
+func (s *UserService) IsUsernameExist(username string) (bool, error) {
+	return s.repo.IsUsernameExist(username)
+}
