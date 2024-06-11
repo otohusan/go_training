@@ -117,6 +117,8 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 		userRoutes.GET("/username/:username", userHandler.GetUserByUsername)
 		// favoriteHandlerをここで呼び出すのが気になるけど、エンドポイントがこっちの方が直感的
 		userRoutes.GET("/:userID/favorite", favoriteHandler.GetFavoriteStudySetsByUserID)
+		userRoutes.POST("/email-exists", userHandler.IsEmailExist)
+		userRoutes.POST("/username-exists", userHandler.IsUsernameExist)
 	}
 
 	// 認証が必要なユーザー関連のルート

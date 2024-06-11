@@ -169,3 +169,41 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 
 	c.JSON(http.StatusOK, users)
 }
+
+func (h *UserHandler) IsEmailExist(c *gin.Context) {
+	var request struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	result, err := h.userService.IsEmailExist(request.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"result": result})
+}
+
+func (h *UserHandler) IsUsernameExist(c *gin.Context) {
+	var request struct {
+		Username string `json:"username" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	result, err := h.userService.IsUsernameExist(request.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"result": result})
+}
