@@ -76,6 +76,19 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// 一般的な情報のみを返す
+// 情報のフィルタリングはサービスが行ってる
+func (h *UserHandler) GetPublicUserInfo(c *gin.Context) {
+	userID := c.Param("userID")
+	user, err := h.userService.GetPublicUserInfo(userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {

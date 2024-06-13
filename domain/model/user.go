@@ -19,6 +19,11 @@ type UserResponse struct {
 	CreatedAt time.Time
 }
 
+type PublicUser struct {
+	ID   string
+	Name string
+}
+
 type UserCredentials struct {
 	ID       string `json:"id"`
 	Password string `json:"password"`

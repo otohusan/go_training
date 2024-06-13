@@ -46,6 +46,21 @@ func (s *UserService) GetUserByUsername(username string) (*model.UserResponse, e
 	return s.repo.GetByUsername(username)
 }
 
+func (s *UserService) GetPublicUserInfo(userID string) (*model.PublicUser, error) {
+	user, err := s.repo.GetByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 一般公開用の情報をフィルタリング
+	publicUser := &model.PublicUser{
+		ID:   user.ID,
+		Name: user.Name,
+	}
+
+	return publicUser, nil
+}
+
 func (s *UserService) UpdateUser(authUserID string, user *model.User) error {
 	if user.Name == "" {
 		return errors.New("username cannot be empty")
