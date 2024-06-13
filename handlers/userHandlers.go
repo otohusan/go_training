@@ -126,6 +126,10 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "user updated successfully"})
 }
 
+// NOTICE:
+// 今のところあまり使いたくない
+// 本当にDBから削除するのか、仮想的に削除するかを悩んでる
+// study_setテーブルにON DELETE CASCADEを割り当ててないから、基本消せない
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	id := c.Param("userID")
 
