@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"os"
 	"strings"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 )
 
 // JWTトークンを署名するために使用する秘密鍵
-var jwtSecret = []byte("secret")
+var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 // ParseTokenはJWTトークンを解析し、userIDを返します
 func ParseToken(authHeader string) (string, error) {
