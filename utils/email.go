@@ -12,6 +12,7 @@ func SendVerificationEmail(email, token string) error {
 	smtpPort := os.Getenv("SMTP_PORT")
 	from := os.Getenv("SMTP_EMAIL")
 	password := os.Getenv("SMTP_PASSWORD")
+	myURL := os.Getenv("MY_URL")
 
 	// 受信者のメールアドレス
 	to := []string{email}
@@ -19,7 +20,7 @@ func SendVerificationEmail(email, token string) error {
 	// メールの内容
 	subject := "本登録のご案内<自動送信>"
 	// TODO: ここでローカルホストのURLを使ってるから直す
-	body := fmt.Sprintf("Konwalk(コンウォーク)に仮登録いただききありがとうございます。\n下記のリンクをクリックし、本登録を完了させてください。\n\nhttp://localhost:8080/verify?token=%s", token)
+	body := fmt.Sprintf("Konwalk(コンウォーク)に仮登録いただききありがとうございます。\n下記のリンクをクリックし、本登録を完了させてください。\n\n%s/verify?token=%s", myURL, token)
 	message := fmt.Sprintf("Subject: %s\n\n%s", subject, body)
 
 	// 認証情報
