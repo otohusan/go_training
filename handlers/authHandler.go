@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"fmt"
 	"go-training/application/service"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,8 +57,9 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 	}
 
 	// TODO: リダイレクト先が作成できれば、そこに行ってもらう
+	FRONTEND_URL := os.Getenv("FRONTEND_URL")
 	// リダイレクト先を設定
-	redirectURL := "http://localhost:5173/Login"
+	redirectURL := fmt.Sprintf("%s/Login", FRONTEND_URL)
 
 	// リダイレクト
 	c.Redirect(http.StatusFound, redirectURL)
