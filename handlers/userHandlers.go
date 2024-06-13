@@ -54,6 +54,16 @@ func (h *UserHandler) CreateUserWithEmail(c *gin.Context) {
 
 func (h *UserHandler) GetUserByID(c *gin.Context) {
 	id := c.Param("userID")
+	authUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	if authUserID.(string) != id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
+		return
+	}
 
 	user, err := h.userService.GetUserByID(id)
 	if err != nil {

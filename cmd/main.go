@@ -112,10 +112,8 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	{
 		userRoutes.GET("/", userHandler.GetAllUsers)
 		userRoutes.POST("/", userHandler.CreateUserWithEmail)
-		userRoutes.GET("/:userID", userHandler.GetUserByID)
 		userRoutes.GET("/public/:userID", userHandler.GetPublicUserInfo)
 		userRoutes.POST("/login/email", userHandler.LoginWithEmail)
-		userRoutes.GET("/username/:username", userHandler.GetUserByUsername)
 		// favoriteHandlerをここで呼び出すのが気になるけど、エンドポイントがこっちの方が直感的
 		userRoutes.GET("/:userID/favorite", favoriteHandler.GetFavoriteStudySetsByUserID)
 		userRoutes.POST("/email-exists", userHandler.IsEmailExist)
@@ -126,6 +124,8 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	authUserRoutes := router.Group("/users")
 	authUserRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
+		authUserRoutes.GET("/:userID", userHandler.GetUserByID)
+		authUserRoutes.GET("/username/:username", userHandler.GetUserByUsername)
 		// nameしか変えられない
 		authUserRoutes.PUT("/:userID", userHandler.UpdateUser)
 		authUserRoutes.DELETE("/:userID", userHandler.DeleteUser)
