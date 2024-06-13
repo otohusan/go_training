@@ -4,6 +4,7 @@ import (
 	"go-training/application/service"
 	"go-training/domain/model"
 	"go-training/utils"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -124,6 +125,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	var req *model.User
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("Error binding JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
@@ -131,6 +133,7 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	// NOTICE: service層ですべき行動が行われてしまってる
 	// 必要な情報があるか
 	if req.Email == "" || req.Password == "" {
+		log.Printf("Email or password is empty")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "情報が足りません"})
 		return
 	}
@@ -138,6 +141,7 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	// emailからユーザ情報を取得
 	user, err := h.userService.GetUserByEmail(req.Email)
 	if err != nil {
+		log.Printf("Error getting user by email: %v", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "there are not the email"})
 		return
 	}
@@ -145,6 +149,7 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	// パスワードを比較
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 	if err != nil {
+		log.Printf("Password mismatch: %v", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "password is not valid"})
 		return
 	}
@@ -152,11 +157,13 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	// JWTトークンの生成
 	tokenString, err := utils.GenerateToken(user.ID)
 	if err != nil {
+		log.Printf("Error generating token: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
 
 	// トークンを返す
+	log.Printf("User %s logged in successfully", user.Email)
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
