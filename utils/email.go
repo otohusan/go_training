@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
+	"strings"
 )
 
 func SendVerificationEmail(email, token string) error {
@@ -21,7 +22,21 @@ func SendVerificationEmail(email, token string) error {
 	subject := "本登録のご案内<自動送信>"
 	// TODO: ここでローカルホストのURLを使ってるから直す
 	body := fmt.Sprintf("Konwalk(コンウォーク)に仮登録いただききありがとうございます。\n下記のリンクをクリックし、本登録を完了させてください。\n\n%s/verify?token=%s", myURL, token)
-	message := fmt.Sprintf("Subject: %s\n\n%s", subject, body)
+
+	// メールのメッセージを作成（エンコーディングの設定を含む）
+	header := make(map[string]string)
+	header["From"] = from
+	header["To"] = strings.Join(to, ",")
+	header["Subject"] = subject
+	header["MIME-Version"] = "1.0"
+	header["Content-Type"] = "text/plain; charset=\"UTF-8\""
+	header["Content-Transfer-Encoding"] = "base64"
+
+	message := ""
+	for k, v := range header {
+		message += fmt.Sprintf("%s: %s\r\n", k, v)
+	}
+	message += "\r\n" + body
 
 	// 認証情報
 	auth := smtp.PlainAuth("", from, password, smtpHost)
