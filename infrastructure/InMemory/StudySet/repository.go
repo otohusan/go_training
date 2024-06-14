@@ -20,7 +20,7 @@ func NewStudySetRepository() repository.StudySetRepository {
 	return &StudySetRepository{}
 }
 
-func (r *StudySetRepository) Create(studySet *model.StudySet) error {
+func (r *StudySetRepository) Create(studySet *model.StudySet) (string, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -32,14 +32,14 @@ func (r *StudySetRepository) Create(studySet *model.StudySet) error {
 		}
 	}
 	if !isUserExists {
-		return errors.New("user doesn't exist")
+		return "", errors.New("user doesn't exist")
 	}
 
 	// uuid作成
 	studySet.ID = uuid.New().String()
 
 	inmemory.StudySets = append(inmemory.StudySets, studySet)
-	return nil
+	return studySet.ID, nil
 }
 
 func (r *StudySetRepository) GetByID(id string) (*model.StudySet, error) {
