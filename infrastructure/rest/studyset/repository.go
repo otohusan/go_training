@@ -4,23 +4,27 @@ import (
 	"database/sql"
 	"errors"
 	"go-training/domain/model"
+	"go-training/domain/repository"
 )
 
 type StudySetRepository struct {
 	db *sql.DB
 }
 
-func NewStudySetRepository(db *sql.DB) *StudySetRepository {
+func NewStudySetRepository(db *sql.DB) repository.StudySetRepository {
 	return &StudySetRepository{db: db}
 }
 
-func (r *StudySetRepository) Create(studySet *model.StudySet) error {
-	query := `INSERT INTO study_sets (user_id, title, description) VALUES ($1, $2, $3)`
-	_, err := r.db.Exec(query, studySet.UserID, studySet.Title, studySet.Description)
+// フロントでの便利さのため
+// 作成と同時にIDも返す
+func (r *StudySetRepository) Create(studySet *model.StudySet) (string, error) {
+	query := `INSERT INTO study_sets (user_id, title, description) VALUES ($1, $2, $3) RETURNING id`
+	var id string
+	err := r.db.QueryRow(query, studySet.UserID, studySet.Title, studySet.Description).Scan(&id)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return id, nil
 }
 
 func (r *StudySetRepository) GetByID(id string) (*model.StudySet, error) {

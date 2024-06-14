@@ -31,13 +31,13 @@ func (h *StudySetHandler) CreateStudySet(c *gin.Context) {
 
 	studySet.UserID = AuthUserID.(string)
 
-	err := h.studySetService.CreateStudySet(AuthUserID.(string), &studySet)
+	studySetID, err := h.studySetService.CreateStudySet(AuthUserID.(string), &studySet)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "study set created successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "study set created successfully", "id": studySetID})
 }
 
 func (h *StudySetHandler) GetStudySetByID(c *gin.Context) {
