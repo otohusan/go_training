@@ -18,6 +18,7 @@ func NewFlashcardHandler(flashcardService *service.FlashcardService, studySetSer
 	return &FlashcardHandler{flashcardService: flashcardService, studySetService: studySetService}
 }
 
+// クイズを作成してそのIDを受け取る
 func (h *FlashcardHandler) CreateFlashcard(c *gin.Context) {
 	var flashcard model.Flashcard
 	if err := c.ShouldBindJSON(&flashcard); err != nil {
@@ -34,12 +35,13 @@ func (h *FlashcardHandler) CreateFlashcard(c *gin.Context) {
 		return
 	}
 
-	if err := h.flashcardService.CreateFlashcard(AuthUserID.(string), &flashcard); err != nil {
+	flashcardID, err := h.flashcardService.CreateFlashcard(AuthUserID.(string), &flashcard)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "flashcard created successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "flashcard created successfully", "id": flashcardID})
 }
 
 func (h *FlashcardHandler) GetFlashcardByID(c *gin.Context) {

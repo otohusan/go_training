@@ -30,9 +30,9 @@ func NewFlashcardService(repo repository.FlashcardRepository) *FlashcardService 
 	}
 }
 
-func (s *FlashcardService) CreateFlashcard(authUserID string, flashcard *model.Flashcard) error {
+func (s *FlashcardService) CreateFlashcard(authUserID string, flashcard *model.Flashcard) (string, error) {
 	if err := validateFlashCard(flashcard); err != nil {
-		return err
+		return "", err
 	}
 
 	return s.repo.Create(authUserID, flashcard)

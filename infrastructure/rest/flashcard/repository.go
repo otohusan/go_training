@@ -4,17 +4,18 @@ import (
 	"database/sql"
 	"errors"
 	"go-training/domain/model"
+	"go-training/domain/repository"
 )
 
 type FlashcardRepository struct {
 	db *sql.DB
 }
 
-func NewFlashcardRepository(db *sql.DB) *FlashcardRepository {
+func NewFlashcardRepository(db *sql.DB) repository.FlashcardRepository {
 	return &FlashcardRepository{db: db}
 }
 
-func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashcard) error {
+func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashcard) (string, error) {
 	// フラッシュカードの作成クエリ
 	// flashcardが加えられるstudySetにあるuserIDと、
 	// リクエストしたuserのidが等しい場合のみflashcardを作成
@@ -26,24 +27,22 @@ func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashca
 			FROM study_sets
 			WHERE id = $1 AND user_id = $4
 		)
+		RETURNING id
 	`
 
+	var id string
+
 	// クエリの実行
-	result, err := r.db.Exec(query, flashcard.StudySetID, flashcard.Question, flashcard.Answer, authUserID)
+	err := r.db.QueryRow(query, flashcard.StudySetID, flashcard.Question, flashcard.Answer, authUserID).Scan(&id)
 	if err != nil {
-		return err
+		if err == sql.ErrNoRows {
+			return "", errors.New("not authorized to create flashcard or study set not found")
+		}
+
+		return "", err
 	}
 
-	// 挿入が成功したか確認
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rowsAffected == 0 {
-		return errors.New("not authorized to create flashcard or study set not found")
-	}
-
-	return nil
+	return id, nil
 }
 
 func (r *FlashcardRepository) GetByID(id string) (*model.Flashcard, error) {
