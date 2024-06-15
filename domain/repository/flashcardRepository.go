@@ -3,7 +3,7 @@ package repository
 import "go-training/domain/model"
 
 type FlashcardRepository interface {
-	Create(authUSerID string, flashcard *model.Flashcard) error
+	Create(authUSerID string, flashcard *model.Flashcard) (string, error)
 	GetByID(id string) (*model.Flashcard, error)
 	GetByStudySetID(studySetID string) ([]*model.Flashcard, error)
 	Update(authUSerID string, flashcard *model.Flashcard) error

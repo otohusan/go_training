@@ -19,7 +19,7 @@ func NewFlashcardRepository() repository.FlashcardRepository {
 	return &FlashcardRepository{}
 }
 
-func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashcard) error {
+func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashcard) (string, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	// パフォーマンスを考慮して
@@ -34,19 +34,19 @@ func (r *FlashcardRepository) Create(authUserID string, flashcard *model.Flashca
 		}
 	}
 	if studySet == nil {
-		return errors.New("studySet doesn't exists")
+		return "", errors.New("studySet doesn't exists")
 	}
 
 	// 認可できるか
 	if studySet.UserID != authUserID {
-		return errors.New("not authorized to update flashcard")
+		return "", errors.New("not authorized to update flashcard")
 	}
 
 	// uuid作成
 	flashcard.ID = uuid.New().String()
 
 	inmemory.Flashcards = append(inmemory.Flashcards, flashcard)
-	return nil
+	return flashcard.ID, nil
 }
 
 func (r *FlashcardRepository) GetByID(id string) (*model.Flashcard, error) {
