@@ -55,7 +55,22 @@ func (s *StudySetService) DeleteStudySet(authUserID, studySetID string) error {
 }
 
 func (s *StudySetService) SearchStudySetsByTitle(title string) ([]*model.StudySet, error) {
-	return s.repo.SearchByTitle(title)
+	studySets, err := s.repo.SearchByTitle(title)
+	if err != nil {
+		return nil, err
+	}
+
+	//NOTICE: クエリをユーザの学習セット分行うから効率悪い
+	// もっと良い方法ありそう
+	for _, studySet := range studySets {
+		flashcards, err := s.flashcardRepo.GetByStudySetID(studySet.ID)
+		if err != nil {
+			return nil, err
+		}
+		studySet.Flashcards = flashcards
+	}
+
+	return studySets, nil
 }
 
 // flashCardも含めて学習セットを返す
