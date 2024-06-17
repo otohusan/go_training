@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"go-training/application/service"
+	"go-training/utils"
 	"net/http"
 	"os"
 
@@ -65,4 +66,25 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 	c.Redirect(http.StatusFound, redirectURL)
 
 	c.JSON(http.StatusOK, gin.H{"message": message})
+}
+
+// Google
+func (h *AuthHandler) GoogleLogin(c *gin.Context) {
+	var req struct {
+		AccessToken string `json:"access_token"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	// Googleのユーザー情報を取得
+	userInfo, err := utils.FetchGoogleUserInfo(req.AccessToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get user info"})
+		return
+	}
+
+	// Google IDを返す
+	c.JSON(http.StatusOK, gin.H{"google_id": userInfo.ID, "email": userInfo.Email, "name": userInfo.Name})
 }

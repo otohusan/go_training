@@ -182,4 +182,6 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	// user登録のルート
 	router.POST("/register/email", authHandler.RegisterWithEmail)
 	router.GET("/verify", authHandler.VerifyEmail)
+	// Googleログインのルート
+	router.POST("/auth/google", authHandler.GoogleLogin)
 }
