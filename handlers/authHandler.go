@@ -78,13 +78,21 @@ func (h *AuthHandler) GoogleLogin(c *gin.Context) {
 		return
 	}
 
-	// Googleのユーザー情報を取得
-	userInfo, err := utils.FetchGoogleUserInfo(req.AccessToken)
+	// ユーザーIDを取得または作成
+	userID, err := h.authService.CreateOrGetUser(req.AccessToken)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get user info"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create or get user"})
 		return
 	}
 
-	// Google IDを返す
-	c.JSON(http.StatusOK, gin.H{"google_id": userInfo.ID, "email": userInfo.Email, "name": userInfo.Name})
+	// JWTトークンを生成
+	token, err := utils.GenerateToken(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+
+	// トークンを返す
+	c.JSON(http.StatusOK, gin.H{"token": token})
+
 }

@@ -1,4 +1,4 @@
-package repository
+package googleUser
 
 import (
 	"database/sql"
