@@ -17,6 +17,7 @@ import (
 
 	"go-training/infrastructure/rest/favorite"
 	"go-training/infrastructure/rest/flashcard"
+	"go-training/infrastructure/rest/googleUser"
 	"go-training/infrastructure/rest/studyset"
 	"go-training/infrastructure/rest/user"
 	"go-training/infrastructure/rest/verification"
@@ -63,13 +64,14 @@ func main() {
 	flashcardRepo := flashcard.NewFlashcardRepository(db)
 	favoriteRepo := favorite.NewFavoriteRepository(db)
 	verificationRepo := verification.NewVerificationRepository(db)
+	googleUserRepo := googleUser.NewGoogleUserRepository(db)
 
 	// サービスの初期化
 	userService := service.NewUserService(userRepo)
 	studySetService := service.NewStudySetService(studySetRepo, flashcardRepo)
 	flashcardService := service.NewFlashcardService(flashcardRepo)
 	favoriteService := service.NewFavoriteService(favoriteRepo)
-	authService := service.NewAuthService(userRepo, verificationRepo)
+	authService := service.NewAuthService(userRepo, verificationRepo, googleUserRepo)
 
 	// ハンドラーの初期化
 	userHandler := handlers.NewUserHandler(userService)
@@ -182,4 +184,6 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	// user登録のルート
 	router.POST("/register/email", authHandler.RegisterWithEmail)
 	router.GET("/verify", authHandler.VerifyEmail)
+	// Googleログインのルート
+	router.POST("/auth/google", authHandler.GoogleLogin)
 }

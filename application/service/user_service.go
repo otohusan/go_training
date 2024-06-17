@@ -27,12 +27,12 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) CreateUserWithEmail(user *model.User) error {
+func (s *UserService) CreateUserWithEmail(user *model.User) (string, error) {
 	if err := validateUser(user); err != nil {
-		return err
+		return "", err
 	}
 	if user.Email == "" {
-		return errors.New("email cannot be empty")
+		return "", errors.New("email cannot be empty")
 	}
 
 	return s.repo.CreateWithEmail(user)

@@ -15,15 +15,16 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) CreateWithEmail(user *model.User) error {
+func (r *UserRepository) CreateWithEmail(user *model.User) (string, error) {
 	// idとcreatedAtは自動で生成される
 	query := `INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, created_at`
+
 	// 作成と、作成されたIDをJWTを生成するためにuserにすぐ割り当てている
 	err := r.db.QueryRow(query, user.Name, user.Password, user.Email).Scan(&user.ID, &user.CreatedAt)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return user.ID, nil
 }
 
 func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {

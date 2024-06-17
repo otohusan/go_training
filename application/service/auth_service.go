@@ -14,10 +14,11 @@ import (
 type AuthService struct {
 	userRepo         repository.UserRepository
 	verificationRepo repository.EmailVerificationRepository
+	googleUserRepo   repository.GoogleUserRepository
 }
 
-func NewAuthService(userRepo repository.UserRepository, verificationRepo repository.EmailVerificationRepository) *AuthService {
-	return &AuthService{userRepo: userRepo, verificationRepo: verificationRepo}
+func NewAuthService(userRepo repository.UserRepository, verificationRepo repository.EmailVerificationRepository, googleUserRepo repository.GoogleUserRepository) *AuthService {
+	return &AuthService{userRepo: userRepo, verificationRepo: verificationRepo, googleUserRepo: googleUserRepo}
 }
 
 func (s *AuthService) RegisterWithEmail(username, email, password string) (string, error) {
@@ -90,7 +91,7 @@ func (s *AuthService) VerifyEmail(token string) (string, error) {
 		Email:    verification.Email,
 		Password: verification.Password,
 	}
-	if err := s.userRepo.CreateWithEmail(user); err != nil {
+	if _, err := s.userRepo.CreateWithEmail(user); err != nil {
 		return "", err
 	}
 
@@ -100,4 +101,49 @@ func (s *AuthService) VerifyEmail(token string) (string, error) {
 	}
 
 	return "email verified and user created successfully", nil
+}
+
+func (s *AuthService) CreateOrGetUser(AccessToken string) (string, error) {
+	// Googleのユーザー情報を取得
+	googleUserInfo, err := utils.FetchGoogleUserInfo(AccessToken)
+	if err != nil {
+		return "", err
+	}
+
+	// googleIDが登録されてるか確認
+	googleUser, err := s.googleUserRepo.GetByGoogleID(googleUserInfo.ID)
+	if err != nil {
+		return "", err
+	}
+
+	// ユーザが存在すれば、取得して、IDを返す
+	if googleUser != nil {
+		user, err := s.userRepo.GetByID(googleUser.UserID)
+		if err != nil {
+			return "", err
+		}
+
+		return user.ID, nil
+	}
+
+	user := &model.User{
+		Name: googleUserInfo.Name,
+	}
+
+	userID, err := s.userRepo.CreateWithEmail(user)
+	if err != nil {
+		return "", err
+	}
+
+	googleUser = &model.GoogleUser{
+		UserID:   userID,
+		GoogleID: googleUserInfo.ID,
+	}
+
+	err = s.googleUserRepo.Create(googleUser)
+	if err != nil {
+		return "", err
+	}
+
+	return user.ID, nil
 }

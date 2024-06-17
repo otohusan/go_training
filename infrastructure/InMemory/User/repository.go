@@ -19,13 +19,13 @@ func NewUserRepository() repository.UserRepository {
 	return &UserRepository{}
 }
 
-func (r *UserRepository) CreateWithEmail(user *model.User) error {
+func (r *UserRepository) CreateWithEmail(user *model.User) (string, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	for _, userSet := range inmemory.Users {
 		if userSet.Email == user.Email {
-			return errors.New("the email can't use")
+			return "", errors.New("the email can't use")
 		}
 	}
 
@@ -33,7 +33,7 @@ func (r *UserRepository) CreateWithEmail(user *model.User) error {
 	user.ID = uuid.New().String()
 
 	inmemory.Users = append(inmemory.Users, user)
-	return nil
+	return user.ID, nil
 }
 
 func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {

@@ -36,7 +36,7 @@ func (h *UserHandler) CreateUserWithEmail(c *gin.Context) {
 	user.Password = string(hashedPassword)
 
 	// ユーザの作成
-	err = h.userService.CreateUserWithEmail(&user)
+	_, err = h.userService.CreateUserWithEmail(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

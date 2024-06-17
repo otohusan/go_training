@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"go-training/application/service"
+	"go-training/utils"
 	"net/http"
 	"os"
 
@@ -65,4 +66,33 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 	c.Redirect(http.StatusFound, redirectURL)
 
 	c.JSON(http.StatusOK, gin.H{"message": message})
+}
+
+// Google
+func (h *AuthHandler) GoogleLogin(c *gin.Context) {
+	var req struct {
+		AccessToken string `json:"access_token"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	// ユーザーIDを取得または作成
+	userID, err := h.authService.CreateOrGetUser(req.AccessToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create or get user"})
+		return
+	}
+
+	// JWTトークンを生成
+	token, err := utils.GenerateToken(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+
+	// トークンを返す
+	c.JSON(http.StatusOK, gin.H{"token": token})
+
 }
