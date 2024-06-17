@@ -91,7 +91,7 @@ func (s *AuthService) VerifyEmail(token string) (string, error) {
 		Email:    verification.Email,
 		Password: verification.Password,
 	}
-	if err := s.userRepo.CreateWithEmail(user); err != nil {
+	if _, err := s.userRepo.CreateWithEmail(user); err != nil {
 		return "", err
 	}
 
@@ -130,13 +130,13 @@ func (s *AuthService) CreateOrGetUser(AccessToken string) (string, error) {
 		Name: googleUserInfo.Name,
 	}
 
-	err = s.userRepo.CreateWithEmail(user)
+	userID, err := s.userRepo.CreateWithEmail(user)
 	if err != nil {
 		return "", err
 	}
 
 	googleUser = &model.GoogleUser{
-		UserID:   user.ID,
+		UserID:   userID,
 		GoogleID: googleUserInfo.ID,
 	}
 
