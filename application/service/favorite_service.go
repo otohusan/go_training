@@ -7,12 +7,14 @@ import (
 )
 
 type FavoriteService struct {
-	favoriteRepo repository.FavoriteRepository
+	favoriteRepo  repository.FavoriteRepository
+	flashcardRepo repository.FlashcardRepository
 }
 
-func NewFavoriteService(favoriteRepo repository.FavoriteRepository) *FavoriteService {
+func NewFavoriteService(favoriteRepo repository.FavoriteRepository, flashcardRepo repository.FlashcardRepository) *FavoriteService {
 	return &FavoriteService{
-		favoriteRepo: favoriteRepo,
+		favoriteRepo:  favoriteRepo,
+		flashcardRepo: flashcardRepo,
 	}
 }
 
@@ -41,5 +43,21 @@ func (s *FavoriteService) IsFavorite(userID, studySetID string) (bool, error) {
 }
 
 func (s *FavoriteService) GetFavoriteStudySetsByUserID(userID string) ([]*model.StudySet, error) {
-	return s.favoriteRepo.GetFavoriteStudySetsByUserID(userID)
+	studySets, err := s.favoriteRepo.GetFavoriteStudySetsByUserID(userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	//NOTICE: クエリをユーザの学習セット分行うから効率悪い
+	// もっと良い方法ありそう
+	for _, studySet := range studySets {
+		flashcards, err := s.flashcardRepo.GetByStudySetID(studySet.ID)
+		if err != nil {
+			return nil, err
+		}
+		studySet.Flashcards = flashcards
+	}
+
+	return studySets, nil
 }

@@ -70,7 +70,7 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	studySetService := service.NewStudySetService(studySetRepo, flashcardRepo)
 	flashcardService := service.NewFlashcardService(flashcardRepo)
-	favoriteService := service.NewFavoriteService(favoriteRepo)
+	favoriteService := service.NewFavoriteService(favoriteRepo, flashcardRepo)
 	authService := service.NewAuthService(userRepo, verificationRepo, googleUserRepo)
 
 	// ハンドラーの初期化
