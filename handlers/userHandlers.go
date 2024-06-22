@@ -159,14 +159,14 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 
 	// NOTICE: service層ですべき行動が行われてしまってる
 	// 必要な情報があるか
-	if req.Email == "" || req.Password == "" {
+	if !req.Email.Valid || req.Email.String == "" || req.Password == "" {
 		log.Printf("Email or password is empty")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "情報が足りません"})
 		return
 	}
 
 	// emailからユーザ情報を取得
-	user, err := h.userService.GetUserByEmail(req.Email)
+	user, err := h.userService.GetUserByEmail(req.Email.String)
 	if err != nil {
 		log.Printf("Error getting user by email: %v", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "there are not the email"})
@@ -190,7 +190,7 @@ func (h *UserHandler) LoginWithEmail(c *gin.Context) {
 	}
 
 	// トークンを返す
-	log.Printf("User %s logged in successfully", user.Email)
+	log.Printf("User %s logged in successfully", user.Email.String)
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 

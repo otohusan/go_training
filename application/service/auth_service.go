@@ -1,10 +1,12 @@
 package service
 
 import (
+	"database/sql"
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
 	"go-training/utils"
+	"log"
 	"net/mail"
 
 	"github.com/google/uuid"
@@ -88,7 +90,7 @@ func (s *AuthService) VerifyEmail(token string) (string, error) {
 	// ユーザーの作成
 	user := &model.User{
 		Name:     verification.Username,
-		Email:    verification.Email,
+		Email:    sql.NullString{String: verification.Email, Valid: true},
 		Password: verification.Password,
 	}
 	if _, err := s.userRepo.CreateWithEmail(user); err != nil {
@@ -107,12 +109,14 @@ func (s *AuthService) CreateOrGetUser(AccessToken string) (string, error) {
 	// Googleのユーザー情報を取得
 	googleUserInfo, err := utils.FetchGoogleUserInfo(AccessToken)
 	if err != nil {
+		log.Printf("googleユーザーの取得に失敗: %v", err)
 		return "", err
 	}
 
 	// googleIDが登録されてるか確認
 	googleUser, err := s.googleUserRepo.GetByGoogleID(googleUserInfo.ID)
 	if err != nil {
+		log.Printf("GoogleID確認時にエラー発生: %v", err)
 		return "", err
 	}
 
@@ -120,6 +124,7 @@ func (s *AuthService) CreateOrGetUser(AccessToken string) (string, error) {
 	if googleUser != nil {
 		user, err := s.userRepo.GetByID(googleUser.UserID)
 		if err != nil {
+			log.Printf("ユーザー取得時にエラー発生: %v", err)
 			return "", err
 		}
 
@@ -130,8 +135,9 @@ func (s *AuthService) CreateOrGetUser(AccessToken string) (string, error) {
 		Name: googleUserInfo.Name,
 	}
 
-	userID, err := s.userRepo.CreateWithEmail(user)
+	userID, err := s.userRepo.CreateWithGoogle(user)
 	if err != nil {
+		log.Printf("Googleからのユーザー作成時にエラー発生: %v", err)
 		return "", err
 	}
 
@@ -142,6 +148,7 @@ func (s *AuthService) CreateOrGetUser(AccessToken string) (string, error) {
 
 	err = s.googleUserRepo.Create(googleUser)
 	if err != nil {
+		log.Printf("Googleテーブルに追加時にエラー発生: %v", err)
 		return "", err
 	}
 

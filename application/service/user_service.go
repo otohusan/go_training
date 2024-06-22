@@ -31,7 +31,7 @@ func (s *UserService) CreateUserWithEmail(user *model.User) (string, error) {
 	if err := validateUser(user); err != nil {
 		return "", err
 	}
-	if user.Email == "" {
+	if !user.Email.Valid || user.Email.String == "" {
 		return "", errors.New("email cannot be empty")
 	}
 

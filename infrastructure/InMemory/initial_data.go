@@ -1,6 +1,7 @@
 package inmemory
 
 import (
+	"database/sql"
 	"go-training/domain/model"
 	"time"
 )
@@ -10,14 +11,14 @@ var Users = []*model.User{
 		ID:        "a",
 		Name:      "a",
 		Password:  "a",
-		Email:     "a",
+		Email:     sql.NullString{String: "a", Valid: true},
 		CreatedAt: time.Now(),
 	},
 	{
 		ID:        "2",
 		Name:      "user2",
 		Password:  "password2",
-		Email:     "user2@example.com",
+		Email:     sql.NullString{String: "user2@example.com", Valid: true},
 		CreatedAt: time.Now(),
 	},
 }

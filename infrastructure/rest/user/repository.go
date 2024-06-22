@@ -27,6 +27,18 @@ func (r *UserRepository) CreateWithEmail(user *model.User) (string, error) {
 	return user.ID, nil
 }
 
+func (r *UserRepository) CreateWithGoogle(user *model.User) (string, error) {
+	// idとcreatedAtは自動で生成される
+	query := `INSERT INTO users (username, password, email) VALUES ($1, NULL, NULL) RETURNING id, created_at`
+
+	// 作成と、作成されたIDをJWTを生成するためにuserにすぐ割り当てている
+	err := r.db.QueryRow(query, user.Name).Scan(&user.ID, &user.CreatedAt)
+	if err != nil {
+		return "", err
+	}
+	return user.ID, nil
+}
+
 func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
 	query := `SELECT id, username, email, created_at 
 			  FROM users 
