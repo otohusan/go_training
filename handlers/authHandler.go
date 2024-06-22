@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-training/application/service"
 	"go-training/utils"
+	"log"
 	"net/http"
 	"os"
 
@@ -74,6 +75,8 @@ func (h *AuthHandler) GoogleLogin(c *gin.Context) {
 		AccessToken string `json:"access_token"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("JSONのバインドに失敗: %v", err)
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
@@ -81,6 +84,8 @@ func (h *AuthHandler) GoogleLogin(c *gin.Context) {
 	// ユーザーIDを取得または作成
 	userID, err := h.authService.CreateOrGetUser(req.AccessToken)
 	if err != nil {
+		log.Printf("ユーザーの作成に失敗: %v", err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create or get user"})
 		return
 	}
@@ -88,6 +93,8 @@ func (h *AuthHandler) GoogleLogin(c *gin.Context) {
 	// JWTトークンを生成
 	token, err := utils.GenerateToken(userID)
 	if err != nil {
+		log.Printf("トークンの生成に失敗: %v", err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
