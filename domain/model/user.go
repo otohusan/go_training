@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -8,14 +9,14 @@ type User struct {
 	ID        string
 	Name      string
 	Password  string
-	Email     string
+	Email     sql.NullString
 	CreatedAt time.Time
 }
 
 type UserResponse struct {
 	ID        string
 	Name      string
-	Email     string
+	Email     sql.NullString
 	CreatedAt time.Time
 }
 

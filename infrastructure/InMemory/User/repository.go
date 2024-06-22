@@ -36,6 +36,23 @@ func (r *UserRepository) CreateWithEmail(user *model.User) (string, error) {
 	return user.ID, nil
 }
 
+func (r *UserRepository) CreateWithGoogle(user *model.User) (string, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for _, userSet := range inmemory.Users {
+		if userSet.Email == user.Email {
+			return "", errors.New("the email can't use")
+		}
+	}
+
+	// uuid作成
+	user.ID = uuid.New().String()
+
+	inmemory.Users = append(inmemory.Users, user)
+	return user.ID, nil
+}
+
 func (r *UserRepository) GetByID(id string) (*model.UserResponse, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -118,7 +135,7 @@ func (r *UserRepository) GetByEmail(email string) (*model.User, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	for _, user := range inmemory.Users {
-		if user.Email == email {
+		if user.Email.String == email {
 			return user, nil
 		}
 	}
@@ -130,7 +147,7 @@ func (r *UserRepository) IsEmailExist(email string) (bool, error) {
 	defer r.mu.Unlock()
 
 	for _, user := range inmemory.Users {
-		if user.Email == email {
+		if user.Email.String == email {
 			return true, nil
 		}
 	}

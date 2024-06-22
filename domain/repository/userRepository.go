@@ -4,6 +4,7 @@ import "go-training/domain/model"
 
 type UserRepository interface {
 	CreateWithEmail(user *model.User) (string, error)
+	CreateWithGoogle(user *model.User) (string, error)
 	GetByID(id string) (*model.UserResponse, error)
 	GetByUsername(username string) (*model.UserResponse, error)
 	Update(user *model.User) error

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"errors"
 	"go-training/domain/model"
 	"go-training/domain/repository"
@@ -89,7 +90,7 @@ func (s *AuthService) VerifyEmail(token string) (string, error) {
 	// ユーザーの作成
 	user := &model.User{
 		Name:     verification.Username,
-		Email:    verification.Email,
+		Email:    sql.NullString{String: verification.Email, Valid: true},
 		Password: verification.Password,
 	}
 	if _, err := s.userRepo.CreateWithEmail(user); err != nil {
@@ -134,7 +135,7 @@ func (s *AuthService) CreateOrGetUser(AccessToken string) (string, error) {
 		Name: googleUserInfo.Name,
 	}
 
-	userID, err := s.userRepo.CreateWithEmail(user)
+	userID, err := s.userRepo.CreateWithGoogle(user)
 	if err != nil {
 		log.Printf("Googleからのユーザー作成時にエラー発生: %v", err)
 		return "", err
