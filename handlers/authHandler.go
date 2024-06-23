@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"go-training/application/service"
 	"go-training/utils"
@@ -20,22 +21,31 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) RegisterWithEmail(c *gin.Context) {
-	// 受け取るデータ構造を定義、受け取り
-	var registrationData struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
+	// emailのsql.NullStringを直接Bindできないから
+	// 受け取るようのやつを用意
+	type CreateUserRequest struct {
+		Username string
+		Password string
+		Email    string
 	}
-	if err := c.ShouldBindJSON(&registrationData); err != nil {
+	var req CreateUserRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 
+	// sql.NullStringに変換
+	email := sql.NullString{
+		String: req.Email,
+		Valid:  req.Email != "",
+	}
+
 	// ユーザを仮登録
 	message, err := h.authService.RegisterWithEmail(
-		registrationData.Username,
-		registrationData.Email,
-		registrationData.Password)
+		req.Username,
+		email,
+		req.Password)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

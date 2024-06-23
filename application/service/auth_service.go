@@ -23,13 +23,13 @@ func NewAuthService(userRepo repository.UserRepository, verificationRepo reposit
 	return &AuthService{userRepo: userRepo, verificationRepo: verificationRepo, googleUserRepo: googleUserRepo}
 }
 
-func (s *AuthService) RegisterWithEmail(username, email, password string) (string, error) {
+func (s *AuthService) RegisterWithEmail(username string, email sql.NullString, password string) (string, error) {
 
 	// 必要情報があるかチェック
 	if username == "" {
 		return "", errors.New("username cannot be empty")
 	}
-	if email == "" {
+	if !email.Valid || email.String == "" {
 		return "", errors.New("email cannot be empty")
 	}
 	if password == "" {
@@ -37,13 +37,13 @@ func (s *AuthService) RegisterWithEmail(username, email, password string) (strin
 	}
 
 	// メールアドレスの形式を検証
-	if _, err := mail.ParseAddress(email); err != nil {
+	if _, err := mail.ParseAddress(email.String); err != nil {
 		return "", errors.New("invalid email format")
 	}
 
 	// メールアドレスの重複チェック
 	// ユーザを取得して空じゃなかったらエラー
-	exists, err := s.userRepo.IsEmailExist(email)
+	exists, err := s.userRepo.IsEmailExist(email.String)
 	if err != nil {
 		return "", err
 	}
@@ -60,7 +60,7 @@ func (s *AuthService) RegisterWithEmail(username, email, password string) (strin
 	// 検証トークンの生成と保存
 	token := uuid.New().String()
 	verification := &model.EmailVerification{
-		Email:    email,
+		Email:    email.String,
 		Token:    token,
 		Username: username,
 		Password: string(hashedPassword),
@@ -72,7 +72,7 @@ func (s *AuthService) RegisterWithEmail(username, email, password string) (strin
 
 	// 検証メール送信
 	// NOTICE: endVerificationEmailは形だけの状態
-	if err := utils.SendVerificationEmail(email, token); err != nil {
+	if err := utils.SendVerificationEmail(email.String, token); err != nil {
 		return "", err
 	}
 
