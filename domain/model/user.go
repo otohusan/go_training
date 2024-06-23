@@ -9,14 +9,14 @@ type User struct {
 	ID        string
 	Name      string
 	Password  string
-	Email     sql.NullString
+	Email     sql.NullString `json:"email,omitempty"`
 	CreatedAt time.Time
 }
 
 type UserResponse struct {
 	ID        string
 	Name      string
-	Email     sql.NullString
+	Email     sql.NullString `json:"email,omitempty"`
 	CreatedAt time.Time
 }
 

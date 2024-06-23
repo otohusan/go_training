@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/smtp"
 	"os"
@@ -36,7 +37,7 @@ func SendVerificationEmail(email, token string) error {
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
 	}
-	message += "\r\n" + body
+	message += "\r\n" + base64.StdEncoding.EncodeToString([]byte(body))
 
 	// 認証情報
 	auth := smtp.PlainAuth("", from, password, smtpHost)

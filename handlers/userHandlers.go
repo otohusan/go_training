@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"go-training/application/service"
 	"go-training/domain/model"
 	"go-training/utils"
@@ -20,20 +21,41 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) CreateUserWithEmail(c *gin.Context) {
-	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	// emailのsql.NullStringを直接Bindできないから
+	// 受け取るようのやつを用意
+	type CreateUserRequest struct {
+		Username string
+		Password string
+		Email    string
+	}
+
+	var req CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 
+	// sql.NullStringに変換
+	email := sql.NullString{
+		String: req.Email,
+		Valid:  req.Email != "",
+	}
+
 	// NOTICE: service層ですべき行動が行われてしまってる
 	// パスワードのハッシュ化
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
 		return
 	}
-	user.Password = string(hashedPassword)
+
+	// ユーザの作成
+	user := model.User{
+		ID:       "",
+		Name:     req.Username,
+		Password: string(hashedPassword),
+		Email:    email,
+	}
 
 	// ユーザの作成
 	_, err = h.userService.CreateUserWithEmail(&user)
@@ -71,7 +93,17 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	// parseNullString を使って user.Email を *string に変換
+	email := utils.ParseNullString(user.Email)
+
+	response := gin.H{
+		"ID":        user.ID,
+		"Name":      user.Name,
+		"Email":     email,
+		"CreatedAt": user.CreatedAt,
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *UserHandler) GetUserByUsername(c *gin.Context) {
@@ -83,7 +115,17 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	// parseNullString を使って user.Email を *string に変換
+	email := utils.ParseNullString(user.Email)
+
+	response := gin.H{
+		"ID":        user.ID,
+		"Name":      user.Name,
+		"Email":     email,
+		"CreatedAt": user.CreatedAt,
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 // 一般的な情報のみを返す
@@ -150,23 +192,36 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 }
 
 func (h *UserHandler) LoginWithEmail(c *gin.Context) {
-	var req *model.User
+	// emailのsql.NullStringを直接Bindできないから
+	// 受け取るようのやつを用意
+	type LoginRequest struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Printf("Error binding JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 
+	// sql.NullStringに変換
+	email := sql.NullString{
+		String: req.Email,
+		Valid:  req.Email != "",
+	}
+
 	// NOTICE: service層ですべき行動が行われてしまってる
 	// 必要な情報があるか
-	if !req.Email.Valid || req.Email.String == "" || req.Password == "" {
+	if !email.Valid || email.String == "" || req.Password == "" {
 		log.Printf("Email or password is empty")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "情報が足りません"})
 		return
 	}
 
 	// emailからユーザ情報を取得
-	user, err := h.userService.GetUserByEmail(req.Email.String)
+	user, err := h.userService.GetUserByEmail(email.String)
 	if err != nil {
 		log.Printf("Error getting user by email: %v", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "there are not the email"})
