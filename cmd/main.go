@@ -161,7 +161,7 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	authFlashcardRoutes := router.Group("/flashcards")
 	authFlashcardRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
-		flashcardRoutes.POST("/generate", flashcardHandler.GenerateAnswerWithAI)
+		authFlashcardRoutes.POST("/generate", flashcardHandler.GenerateAnswerWithAI)
 		authFlashcardRoutes.POST("/:studySetID", flashcardHandler.CreateFlashcard)
 		authFlashcardRoutes.PUT("/:flashcardID", flashcardHandler.UpdateFlashcard)
 		authFlashcardRoutes.DELETE("/:flashcardID", flashcardHandler.DeleteFlashcard)
