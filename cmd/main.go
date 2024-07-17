@@ -155,13 +155,13 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	{
 		flashcardRoutes.GET("/:id", flashcardHandler.GetFlashcardByID)
 		flashcardRoutes.GET("/studyset/:studySetID", flashcardHandler.GetFlashcardsByStudySetID)
-		flashcardRoutes.POST("/generate", flashcardHandler.GenerateAnswerWithAI)
 	}
 
 	// 認証が必要なフラッシュカード関連のルート
 	authFlashcardRoutes := router.Group("/flashcards")
 	authFlashcardRoutes.Use(middleware.AuthMiddleware()) // 認証ミドルウェアの適用
 	{
+		flashcardRoutes.POST("/generate", flashcardHandler.GenerateAnswerWithAI)
 		authFlashcardRoutes.POST("/:studySetID", flashcardHandler.CreateFlashcard)
 		authFlashcardRoutes.PUT("/:flashcardID", flashcardHandler.UpdateFlashcard)
 		authFlashcardRoutes.DELETE("/:flashcardID", flashcardHandler.DeleteFlashcard)

@@ -156,6 +156,13 @@ type ResponseBody struct {
 
 func (h *FlashcardHandler) GenerateAnswerWithAI(c *gin.Context) {
 
+	// 認証IDを取り出す
+	_, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
 	var requestBody struct {
 		Question string `json:"question"`
 	}
