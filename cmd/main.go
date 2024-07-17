@@ -155,6 +155,7 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	{
 		flashcardRoutes.GET("/:id", flashcardHandler.GetFlashcardByID)
 		flashcardRoutes.GET("/studyset/:studySetID", flashcardHandler.GetFlashcardsByStudySetID)
+		flashcardRoutes.POST("/generate", flashcardHandler.GenerateAnswerWithAI)
 	}
 
 	// 認証が必要なフラッシュカード関連のルート
