@@ -121,37 +121,22 @@ func (h *FlashcardHandler) DeleteFlashcard(c *gin.Context) {
 }
 
 // AIに使う部分
-type MessageContent struct {
-	Type string `json:"type"`
-	Text string `json:"text"`
-}
-
 type Message struct {
-	Role    string           `json:"role"`
-	Content []MessageContent `json:"content"`
+	Role    string `json:"role"`
+	Content string `json:"content"`
 }
 
 type RequestBody struct {
-	Model     string    `json:"model"`
-	MaxTokens int       `json:"max_tokens"`
-	Messages  []Message `json:"messages"`
+	Model    string    `json:"model"`
+	Messages []Message `json:"messages"`
 }
 
 type ResponseBody struct {
-	Content []struct {
-		Text string `json:"text"`
-		Type string `json:"type"`
-	} `json:"content"`
-	ID           string  `json:"id"`
-	Model        string  `json:"model"`
-	Role         string  `json:"role"`
-	StopReason   string  `json:"stop_reason"`
-	StopSequence *string `json:"stop_sequence"`
-	Type         string  `json:"type"`
-	Usage        struct {
-		InputTokens  int `json:"input_tokens"`
-		OutputTokens int `json:"output_tokens"`
-	} `json:"usage"`
+	Choices []struct {
+		Message struct {
+			Content string `json:"content"`
+		} `json:"message"`
+	} `json:"choices"`
 }
 
 func (h *FlashcardHandler) GenerateAnswerWithAI(c *gin.Context) {
@@ -175,40 +160,38 @@ func (h *FlashcardHandler) GenerateAnswerWithAI(c *gin.Context) {
 	}
 
 	// Load API key from environment variables
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
+	apiKey := os.Getenv("OPENAI_API_KEY")
 	if apiKey == "" {
 		log.Println("環境変数にAPIキーが見つかりません")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "API key not found"})
 		return
 	}
 
-	// Prepare request body for Anthropic API
-	anthropicRequestBody := RequestBody{
-		Model:     "claude-3-haiku-20240307",
-		MaxTokens: 1024,
+	// Prepare request body for OpenAI API
+	openaiRequestBody := RequestBody{
+		Model: "gpt-4o-mini",
 		Messages: []Message{
 			{
-				Role: "user",
-				Content: []MessageContent{
-					{
-						Type: "text",
-						Text: requestBody.Question,
-					},
-				},
+				Role:    "system",
+				Content: "クイズの問題が与えられるので、その回答を出力してください。簡潔に50文字以内の回答をしてください。回答は文字数が少ない程好ましいです。",
+			},
+			{
+				Role:    "user",
+				Content: requestBody.Question,
 			},
 		},
 	}
 
-	reqBody, err := json.Marshal(anthropicRequestBody)
+	reqBody, err := json.Marshal(openaiRequestBody)
 	if err != nil {
 		log.Println("リクエストボディのマーシャリングエラー:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error marshaling request body"})
 		return
 	}
 
-	// Make HTTP request to Anthropic API
+	// Make HTTP request to OpenAI API
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "https://api.anthropic.com/v1/messages", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(reqBody))
 	if err != nil {
 		log.Println("リクエストの作成エラー:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating request"})
@@ -216,8 +199,7 @@ func (h *FlashcardHandler) GenerateAnswerWithAI(c *gin.Context) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", apiKey)
-	req.Header.Set("anthropic-version", "2023-06-01")
+	req.Header.Set("Authorization", "Bearer "+apiKey)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -236,12 +218,8 @@ func (h *FlashcardHandler) GenerateAnswerWithAI(c *gin.Context) {
 		return
 	}
 
-	// Parse response from Anthropic API
-	var responseBody struct {
-		Content []struct {
-			Text string `json:"text"`
-		} `json:"content"`
-	}
+	// Parse response from OpenAI API
+	var responseBody ResponseBody
 	if err := json.NewDecoder(resp.Body).Decode(&responseBody); err != nil {
 		log.Println("レスポンスのデコードエラー:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error decoding response"})
@@ -249,8 +227,8 @@ func (h *FlashcardHandler) GenerateAnswerWithAI(c *gin.Context) {
 	}
 
 	// Extract the answer text from the response
-	if len(responseBody.Content) > 0 {
-		answer := responseBody.Content[0].Text
+	if len(responseBody.Choices) > 0 {
+		answer := responseBody.Choices[0].Message.Content
 		c.JSON(http.StatusOK, gin.H{"answer": answer})
 	} else {
 		log.Println("APIレスポンスにコンテンツが見つかりません")
