@@ -110,13 +110,13 @@ func (h *StudySetHandler) DeleteStudySet(c *gin.Context) {
 }
 
 func (h *StudySetHandler) SearchStudySetsByTitle(c *gin.Context) {
-	title := c.Query("title")
+	title := c.Query("keyword")
 	if title == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "title is empty"})
 		return
 	}
 
-	studySets, err := h.studySetService.SearchStudySetsByTitle(title)
+	studySets, err := h.studySetService.SearchStudySetsByKeyword(title)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

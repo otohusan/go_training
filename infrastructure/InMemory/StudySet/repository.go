@@ -131,13 +131,13 @@ func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
 
 }
 
-func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, error) {
+func (r *StudySetRepository) SearchByKeyword(keyword string) ([]*model.StudySet, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	var results []*model.StudySet
 	for _, studySet := range inmemory.StudySets {
-		if strings.Contains(strings.ToLower(studySet.Title), strings.ToLower(title)) {
+		if strings.Contains(strings.ToLower(studySet.Title), strings.ToLower(keyword)) {
 			results = append(results, studySet)
 		}
 	}

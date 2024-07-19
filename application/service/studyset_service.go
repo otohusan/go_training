@@ -54,8 +54,8 @@ func (s *StudySetService) DeleteStudySet(authUserID, studySetID string) error {
 	return s.repo.Delete(authUserID, studySetID)
 }
 
-func (s *StudySetService) SearchStudySetsByTitle(title string) ([]*model.StudySet, error) {
-	studySets, err := s.repo.SearchByTitle(title)
+func (s *StudySetService) SearchStudySetsByKeyword(keyword string) ([]*model.StudySet, error) {
+	studySets, err := s.repo.SearchByKeyword(keyword)
 	if err != nil {
 		return nil, err
 	}

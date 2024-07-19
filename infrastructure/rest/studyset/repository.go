@@ -110,12 +110,12 @@ func (r *StudySetRepository) Delete(authUserID, studySetID string) error {
 }
 
 // タイトルが合う学習セットを最大5件送信
-func (r *StudySetRepository) SearchByTitle(title string) ([]*model.StudySet, error) {
+func (r *StudySetRepository) SearchByKeyword(keyword string) ([]*model.StudySet, error) {
 	query := `SELECT id, user_id, title, description, created_at, updated_at 
 			  FROM study_sets 
 			  WHERE LOWER(title) LIKE '%' || LOWER($1) || '%' 
 			  LIMIT 5`
-	rows, err := r.db.Query(query, title)
+	rows, err := r.db.Query(query, keyword)
 	if err != nil {
 		return nil, err
 	}
