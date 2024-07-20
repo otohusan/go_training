@@ -116,7 +116,7 @@ func (r *StudySetRepository) SearchByKeyword(keyword string) ([]*model.StudySet,
 			  JOIN flashcards fc ON ss.id = fc.study_set_id
 			  WHERE LOWER(ss.title) LIKE '%' || LOWER($1) || '%' 
 	   			OR LOWER(ss.description) LIKE '%' || LOWER($1) || '%'
-			  GROUP BY ss.id
+			  GROUP BY ss.id, ss.user_id, ss.title, ss.description, ss.created_at, ss.updated_at
 			  LIMIT 5
 	`
 	rows, err := r.db.Query(query, keyword)
