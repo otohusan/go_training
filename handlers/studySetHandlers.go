@@ -3,6 +3,7 @@ package handlers
 import (
 	"go-training/application/service"
 	"go-training/domain/model"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -112,12 +113,14 @@ func (h *StudySetHandler) DeleteStudySet(c *gin.Context) {
 func (h *StudySetHandler) SearchStudySetsByTitle(c *gin.Context) {
 	title := c.Query("keyword")
 	if title == "" {
+		log.Println("Error: タイトルが入力されていない")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "title is empty"})
 		return
 	}
 
 	studySets, err := h.studySetService.SearchStudySetsByKeyword(title)
 	if err != nil {
+		log.Println("検索中にエラー:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
