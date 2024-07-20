@@ -173,7 +173,7 @@ func (h *FlashcardHandler) GenerateAnswerWithAI(c *gin.Context) {
 		Messages: []Message{
 			{
 				Role:    "system",
-				Content: "クイズの問題が与えられるので、その回答を出力してください。簡潔に50文字以内の回答をしてください。回答は文字数が少ない程好ましいです。",
+				Content: "クイズの問題または回答が与えられるので、問題が与えられた場合は回答を、回答が与えられた場合は問題を出力してください。簡潔に50文字以内の回答をしてください。出力は文字数が少ない程好ましいです。",
 			},
 			{
 				Role:    "user",
