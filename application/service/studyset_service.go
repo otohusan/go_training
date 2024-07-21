@@ -92,3 +92,33 @@ func (s *StudySetService) GetStudySetsWithFlashcardsByUserID(userID string) ([]*
 
 	return studySets, nil
 }
+
+// studySetをコピーして自分のにする
+func (s *StudySetService) CopyStudySetForMe(studySet model.StudySet, userID string) error {
+	flashcards, err := s.flashcardRepo.GetByStudySetID(studySet.ID)
+	if err != nil {
+		return err
+	}
+
+	var newStudySet model.StudySet
+
+	newStudySet.Title = studySet.Title + "のコピー"
+	newStudySet.Description = studySet.Description
+	newStudySet.UserID = userID
+
+	newStudySetID, err := s.repo.Create(&newStudySet)
+	if err != nil {
+		return err
+	}
+
+	for _, f := range flashcards {
+		f.StudySetID = newStudySetID
+		_, err := s.flashcardRepo.Create(userID, f)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

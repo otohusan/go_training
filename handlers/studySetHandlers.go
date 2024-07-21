@@ -127,3 +127,31 @@ func (h *StudySetHandler) SearchStudySetsByTitle(c *gin.Context) {
 
 	c.JSON(http.StatusOK, studySets)
 }
+
+func (h *StudySetHandler) CopyStudySetForMe(c *gin.Context) {
+	userID := c.Param("userID")
+	AuthUserID, exists := c.Get("AuthUserID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	if userID != AuthUserID.(string) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "you can't copy"})
+		return
+	}
+
+	var studySet model.StudySet
+	if err := c.ShouldBindJSON(&studySet); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	err := h.studySetService.CopyStudySetForMe(studySet, AuthUserID.(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "could not copy studySet"})
+	}
+
+	c.JSON(http.StatusOK, "コピーが完了")
+
+}
