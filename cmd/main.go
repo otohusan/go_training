@@ -148,6 +148,7 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 		authStudySetRoutes.POST("/", studySetHandler.CreateStudySet)
 		authStudySetRoutes.PUT("/:studySetID", studySetHandler.UpdateStudySet)
 		authStudySetRoutes.DELETE("/:studySetID", studySetHandler.DeleteStudySet)
+		authStudySetRoutes.POST("copy/:userID", studySetHandler.CopyStudySetForMe)
 	}
 
 	// フラッシュカード関連のルートをグループ化
