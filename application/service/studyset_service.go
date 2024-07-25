@@ -30,7 +30,19 @@ func (s *StudySetService) CreateStudySet(authUserID string, studySet *model.Stud
 }
 
 func (s *StudySetService) GetStudySetByID(id string) (*model.StudySet, error) {
-	return s.repo.GetByID(id)
+	studySet, err := s.repo.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	flashcards, err := s.flashcardRepo.GetByStudySetID(studySet.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	studySet.Flashcards = flashcards
+
+	return studySet, nil
 }
 
 func (s *StudySetService) GetStudySetsByUserID(userID string) ([]*model.StudySet, error) {
