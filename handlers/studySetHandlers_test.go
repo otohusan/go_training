@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -65,6 +66,24 @@ func TestGetStudySetByID(t *testing.T) {
 			"updated_at":"` + expectedStudySet.UpdatedAt.Format(time.RFC3339) + `",
 			"flashcards":null
 		}`
+		assert.JSONEq(t, expectedBody, w.Body.String())
+	})
+
+	// テストケース2: 学習セットが見つからない場合のエラーハンドリング
+	t.Run("Study set not found", func(t *testing.T) {
+		// モックサービスがエラーを返すように設定
+		mockStudySetService.EXPECT().GetStudySetByID("999").Return(nil, errors.New("study set not found"))
+
+		// HTTPリクエストを作成
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/studysets/999", nil)
+
+		// リクエストを処理
+		router.ServeHTTP(w, req)
+
+		// レスポンスの検証
+		assert.Equal(t, http.StatusNotFound, w.Code)
+		expectedBody := `{"error":"study set not found"}`
 		assert.JSONEq(t, expectedBody, w.Body.String())
 	})
 
