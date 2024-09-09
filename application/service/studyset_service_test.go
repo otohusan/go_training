@@ -1,6 +1,7 @@
 package service_test
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -54,6 +55,22 @@ func TestGetStudySetByID(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, studySet)
 		assert.Equal(t, expectedStudySet, studySet)
+	})
+
+	// テストケース2: 学習セットが見つからない場合のエラーハンドリング
+	t.Run("Study set not found", func(t *testing.T) {
+		studySetID := "999"
+
+		// モックの期待される振る舞いを定義
+		mockStudySetRepo.EXPECT().GetByID(studySetID).Return(nil, errors.New("study set not found"))
+
+		// サービスの呼び出し
+		studySet, err := studySetService.GetStudySetByID(studySetID)
+
+		// 結果の検証
+		assert.Error(t, err)
+		assert.Nil(t, studySet)
+		assert.Equal(t, "study set not found", err.Error())
 	})
 
 }
