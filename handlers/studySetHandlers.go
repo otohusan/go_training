@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"go-training/application/service"
+	service_interface "go-training/application/service/interface"
 	"go-training/domain/model"
 	"log"
 	"net/http"
@@ -10,10 +10,10 @@ import (
 )
 
 type StudySetHandler struct {
-	studySetService *service.StudySetService
+	studySetService service_interface.StudySetService
 }
 
-func NewStudySetHandler(studySetService *service.StudySetService) *StudySetHandler {
+func NewStudySetHandler(studySetService service_interface.StudySetService) *StudySetHandler {
 	return &StudySetHandler{studySetService: studySetService}
 }
 
