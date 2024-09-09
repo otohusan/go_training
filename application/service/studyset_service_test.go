@@ -73,4 +73,31 @@ func TestGetStudySetByID(t *testing.T) {
 		assert.Equal(t, "study set not found", err.Error())
 	})
 
+	// テストケース3: フラッシュカード取得でエラーが発生した場合
+	t.Run("Error while fetching flashcards", func(t *testing.T) {
+		studySetID := "123"
+		userID := "user_456"
+
+		expectedStudySet := &model.StudySet{
+			ID:          studySetID,
+			UserID:      userID,
+			Title:       "Test Study Set",
+			Description: "This is a test description",
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Flashcards:  nil,
+		}
+
+		// モックの期待される振る舞いを定義
+		mockStudySetRepo.EXPECT().GetByID(studySetID).Return(expectedStudySet, nil)
+		mockFlashcardRepo.EXPECT().GetByStudySetID(studySetID).Return(nil, errors.New("error fetching flashcards"))
+
+		// サービスの呼び出し
+		studySet, err := studySetService.GetStudySetByID(studySetID)
+
+		// 結果の検証
+		assert.Error(t, err)
+		assert.Nil(t, studySet)
+		assert.Equal(t, "error fetching flashcards", err.Error())
+	})
 }
