@@ -8,17 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-
-	"go-training/handlers"
 )
 
 func TestPingRoute(t *testing.T) {
 	// GoMockコントローラーの初期化
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
+
 	// Ginのルーターを作成
 	router := gin.Default()
-	router.GET("/studysets/:id", handlers.GetStudySetByID)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/ping", nil)
