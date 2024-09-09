@@ -86,5 +86,4 @@ func TestGetStudySetByID(t *testing.T) {
 		expectedBody := `{"error":"study set not found"}`
 		assert.JSONEq(t, expectedBody, w.Body.String())
 	})
-
 }
