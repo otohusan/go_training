@@ -1,4 +1,4 @@
-package service
+package service_interface
 
 import "go-training/domain/model"
 

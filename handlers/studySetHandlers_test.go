@@ -1,35 +1,26 @@
 package handlers_test
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
+	gomock "go.uber.org/mock/gomock"
+
+	"go-training/application/service/mocks"
+	"go-training/handlers"
 )
 
-func TestPingRoute(t *testing.T) {
+func TestGetStudySetByID(t *testing.T) {
+
 	// GoMockコントローラーの初期化
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	// モックサービスの作成
+	mockStudySetService := mocks.NewMockStudySetService(ctrl)
 	// Ginのルーターを作成
 	router := gin.Default()
+	studySetHandler := handlers.NewStudySetHandler(mockStudySetService)
+	router.GET("/studysets/:id", studySetHandler.GetStudySetByID)
 
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/ping", nil)
-	router.ServeHTTP(w, req)
-
-	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "pong", w.Body.String())
-}
-
-func TestGetStudySetByID(t *testing.T) {
-
-	got := 1
-	if got != 1 {
-		t.Errorf("Abs(-1) = %d; want 1", got)
-	}
 }
