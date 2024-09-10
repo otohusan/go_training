@@ -94,7 +94,7 @@ func setupRoutes(router *gin.Engine, userHandler *handlers.UserHandler, studySet
 	flashcardHandler *handlers.FlashcardHandler, favoriteHandler *handlers.FavoriteHandler, authHandler *handlers.AuthHandler) {
 	// CORSの設定
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://konwalk.jp"}, // クライアントのオリジンを許可
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8081", "https://konwalk.jp"}, // クライアントのオリジンを許可
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
