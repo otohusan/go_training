@@ -12,7 +12,7 @@ import (
 // JWTトークンを署名するために使用する秘密鍵
 var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
-// ParseTokenはJWTトークンを解析し、userIDを返します
+// ParseTokenはJWTトークンを解析し、userIDを返す
 func ParseToken(authHeader string) (string, error) {
 	if authHeader == "" {
 		return "", errors.New("authHeaderが空です")
